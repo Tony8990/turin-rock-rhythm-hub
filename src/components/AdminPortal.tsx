@@ -1,11 +1,13 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Edit, Trash2, Upload, Users, FileText, Image, Calendar, Clock, MapPin, Mail, Phone } from "lucide-react";
+import { Plus, Edit, Trash2, Upload, Users, FileText, Image, Calendar, Clock, MapPin, Mail, Phone, Bell, BellOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAppContext } from "@/contexts/AppContext";
 import {
   Table,
   TableBody,
@@ -14,30 +16,27 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-// Mock data for demonstration
-const mockClasses = [
-  { id: 1, name: "Beginner Rockabilly", description: "Perfect for first-time dancers", time: "7:00 PM", location: "Studio A" },
-  { id: 2, name: "Advanced Swing", description: "For experienced dancers", time: "8:30 PM", location: "Studio B" },
-];
-
-const mockEvents = [
-  { id: 1, name: "Summer Dance Social", description: "Join us for a night of dancing", date: "2024-07-15", venue: "Main Hall" },
-  { id: 2, name: "Rockabilly Workshop", description: "Intensive weekend workshop", date: "2024-07-22", venue: "Studio Complex" },
-];
-
-const mockSubscribers = [
-  { id: 1, name: "Maria Rossi", email: "maria@email.com", phone: "+39 123 456 7890", course: "Beginner Rockabilly", subscriptionDate: "2024-06-15" },
-  { id: 2, name: "Giuseppe Bianchi", email: "giuseppe@email.com", phone: "+39 987 654 3210", course: "Advanced Swing", subscriptionDate: "2024-06-18" },
-  { id: 3, name: "Anna Verdi", email: "anna@email.com", phone: "+39 555 123 4567", course: "Beginner Rockabilly", subscriptionDate: "2024-06-20" },
-];
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
 
 const AdminPortal = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [adminPassword, setAdminPassword] = useState("");
-  const [classes, setClasses] = useState(mockClasses);
-  const [events, setEvents] = useState(mockEvents);
-  const [subscribers, setSubscribers] = useState(mockSubscribers);
+  const { 
+    courses, 
+    events, 
+    subscribers, 
+    unreadNotifications, 
+    addCourse, 
+    addEvent, 
+    getSubscribersByCourse,
+    markNotificationsAsRead 
+  } = useAppContext();
   const { toast } = useToast();
 
   // Form states for classes
@@ -45,6 +44,8 @@ const AdminPortal = () => {
   const [classDescription, setClassDescription] = useState("");
   const [classTime, setClassTime] = useState("");
   const [classLocation, setClassLocation] = useState("");
+  const [classInstructor, setClassInstructor] = useState("");
+  const [classPrice, setClassPrice] = useState("");
 
   // Form states for events
   const [eventName, setEventName] = useState("");
@@ -55,6 +56,7 @@ const AdminPortal = () => {
   const handleLogin = () => {
     if (adminPassword === "rockinturin2024") {
       setIsAuthenticated(true);
+      markNotificationsAsRead();
       toast({
         title: "Welcome Admin!",
         description: "You have successfully logged into the admin portal.",
@@ -70,26 +72,30 @@ const AdminPortal = () => {
 
   const handleAddClass = () => {
     if (className && classDescription && classTime && classLocation) {
-      const newClass = {
-        id: classes.length + 1,
+      addCourse({
         name: className,
         description: classDescription,
         time: classTime,
         location: classLocation,
-      };
-      setClasses([...classes, newClass]);
+        instructor: classInstructor || undefined,
+        price: classPrice ? parseFloat(classPrice) : undefined
+      });
+      
       setClassName("");
       setClassDescription("");
       setClassTime("");
       setClassLocation("");
+      setClassInstructor("");
+      setClassPrice("");
+      
       toast({
-        title: "Class Added!",
+        title: "Class Added! 🎉",
         description: `${className} has been added successfully.`,
       });
     } else {
       toast({
         title: "Error",
-        description: "Please fill in all fields.",
+        description: "Please fill in all required fields.",
         variant: "destructive",
       });
     }
@@ -97,20 +103,20 @@ const AdminPortal = () => {
 
   const handleAddEvent = () => {
     if (eventName && eventDescription && eventDate && eventVenue) {
-      const newEvent = {
-        id: events.length + 1,
+      addEvent({
         name: eventName,
         description: eventDescription,
         date: eventDate,
         venue: eventVenue,
-      };
-      setEvents([...events, newEvent]);
+      });
+      
       setEventName("");
       setEventDescription("");
       setEventDate("");
       setEventVenue("");
+      
       toast({
-        title: "Event Added!",
+        title: "Event Added! 🎉",
         description: `${eventName} has been added successfully.`,
       });
     } else {
@@ -122,14 +128,29 @@ const AdminPortal = () => {
     }
   };
 
+  const subscribersByCourse = getSubscribersByCourse();
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-vintage-cream to-white pt-24">
         <Card className="w-full max-w-md retro-shadow">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-vintage text-vintage-teal">
+            <CardTitle className="text-2xl font-vintage text-vintage-teal flex items-center justify-center">
+              {unreadNotifications > 0 && (
+                <div className="relative mr-3">
+                  <Bell className="w-6 h-6 text-vintage-gold" />
+                  <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1 py-0 min-w-[1.2rem] h-5 rounded-full flex items-center justify-center">
+                    {unreadNotifications}
+                  </Badge>
+                </div>
+              )}
               Admin Portal Access
             </CardTitle>
+            {unreadNotifications > 0 && (
+              <p className="text-vintage-gold text-sm font-medium">
+                {unreadNotifications} new registration{unreadNotifications > 1 ? 's' : ''}!
+              </p>
+            )}
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -160,23 +181,175 @@ const AdminPortal = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-vintage-cream to-white pt-24">
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8 animate-fade-in-up">
-          <h1 className="text-4xl font-vintage font-bold text-vintage-teal mb-2">
-            Admin Portal
-          </h1>
-          <p className="text-vintage-teal/70">
-            Manage your dance school content and settings
-          </p>
+        <div className="mb-8 animate-fade-in-up flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-vintage font-bold text-vintage-teal mb-2">
+              Admin Portal
+            </h1>
+            <p className="text-vintage-teal/70">
+              Manage your dance school content and settings
+            </p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <Bell className="w-5 h-5 text-vintage-teal" />
+              <span className="text-vintage-teal font-medium">
+                {subscribers.length} Total Subscribers
+              </span>
+            </div>
+            <Button
+              onClick={() => setIsAuthenticated(false)}
+              variant="outline"
+              className="border-vintage-teal text-vintage-teal"
+            >
+              Logout
+            </Button>
+          </div>
         </div>
 
-        <Tabs defaultValue="content" className="w-full">
+        <Tabs defaultValue="subscribers" className="w-full">
           <TabsList className="grid w-full grid-cols-5 mb-8">
+            <TabsTrigger value="subscribers" className="relative">
+              Subscribers
+              {unreadNotifications > 0 && (
+                <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1 py-0 min-w-[1rem] h-4 rounded-full">
+                  {unreadNotifications}
+                </Badge>
+              )}
+            </TabsTrigger>
             <TabsTrigger value="content">Content</TabsTrigger>
-            <TabsTrigger value="subscribers">Subscribers</TabsTrigger>
             <TabsTrigger value="media">Media</TabsTrigger>
             <TabsTrigger value="newsletter">Newsletter</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
+
+          {/* Subscribers Management - Now first tab */}
+          <TabsContent value="subscribers">
+            <Card className="dance-card-hover">
+              <CardHeader>
+                <CardTitle className="flex items-center text-vintage-teal">
+                  <Users className="w-5 h-5 mr-2" />
+                  Course Subscribers ({subscribers.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {/* Subscribers grouped by course */}
+                <Accordion type="multiple" className="w-full">
+                  {Object.entries(subscribersByCourse).map(([courseName, courseSubscribers]) => (
+                    <AccordionItem key={courseName} value={courseName} className="border-vintage-teal/20">
+                      <AccordionTrigger className="text-vintage-teal hover:text-vintage-teal/80">
+                        <div className="flex items-center justify-between w-full mr-4">
+                          <span className="font-vintage font-semibold">{courseName}</span>
+                          <Badge className="bg-vintage-teal text-vintage-cream">
+                            {courseSubscribers.length} subscriber{courseSubscribers.length > 1 ? 's' : ''}
+                          </Badge>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <div className="rounded-md border border-vintage-teal/20 mt-4">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Name</TableHead>
+                                <TableHead>Email</TableHead>
+                                <TableHead>Phone</TableHead>
+                                <TableHead>Experience</TableHead>
+                                <TableHead>Date</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead>Actions</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {courseSubscribers.map((subscriber) => (
+                                <TableRow key={subscriber.id}>
+                                  <TableCell className="font-medium">{subscriber.name}</TableCell>
+                                  <TableCell>
+                                    <div className="flex items-center">
+                                      <Mail className="w-4 h-4 mr-2 text-vintage-teal" />
+                                      {subscriber.email}
+                                    </div>
+                                  </TableCell>
+                                  <TableCell>
+                                    <div className="flex items-center">
+                                      <Phone className="w-4 h-4 mr-2 text-vintage-teal" />
+                                      {subscriber.phone}
+                                    </div>
+                                  </TableCell>
+                                  <TableCell>
+                                    <Badge variant="outline" className="border-vintage-teal/50 text-vintage-teal">
+                                      {subscriber.experience || 'Not specified'}
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell>{subscriber.subscriptionDate}</TableCell>
+                                  <TableCell>
+                                    <Badge 
+                                      className={
+                                        subscriber.status === 'confirmed' 
+                                          ? 'bg-green-100 text-green-800 border-green-200' 
+                                          : subscriber.status === 'pending'
+                                          ? 'bg-yellow-100 text-yellow-800 border-yellow-200'
+                                          : 'bg-red-100 text-red-800 border-red-200'
+                                      }
+                                    >
+                                      {subscriber.status}
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell>
+                                    <div className="flex gap-2">
+                                      <Button size="sm" variant="outline" className="border-vintage-teal text-vintage-teal">
+                                        <Edit className="w-3 h-3" />
+                                      </Button>
+                                      <Button size="sm" variant="outline" className="border-red-500 text-red-500">
+                                        <Trash2 className="w-3 h-3" />
+                                      </Button>
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </div>
+                        
+                        {/* Course subscriber actions */}
+                        <div className="mt-4 flex gap-2">
+                          <Button size="sm" className="vintage-gradient text-vintage-cream">
+                            Export {courseName} Subscribers
+                          </Button>
+                          <Button size="sm" variant="outline" className="border-vintage-teal text-vintage-teal">
+                            Email {courseName} Group
+                          </Button>
+                        </div>
+                        
+                        {/* Show special requests if any */}
+                        {courseSubscribers.some(s => s.message) && (
+                          <div className="mt-4 p-4 bg-vintage-cream/30 rounded-lg">
+                            <h4 className="font-semibold text-vintage-teal mb-2">Special Requests:</h4>
+                            {courseSubscribers
+                              .filter(s => s.message)
+                              .map(subscriber => (
+                                <div key={subscriber.id} className="mb-2">
+                                  <span className="font-medium text-vintage-teal">{subscriber.name}:</span>
+                                  <span className="text-vintage-teal/70 ml-2">{subscriber.message}</span>
+                                </div>
+                              ))}
+                          </div>
+                        )}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+
+                <div className="mt-6 flex gap-2">
+                  <Button className="vintage-gradient text-vintage-cream">
+                    Export All Subscribers
+                  </Button>
+                  <Button variant="outline" className="border-vintage-teal text-vintage-teal">
+                    Send Group Email
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           {/* Content Management */}
           <TabsContent value="content">
@@ -191,29 +364,44 @@ const AdminPortal = () => {
                 <CardContent>
                   <div className="space-y-4">
                     <Input 
-                      placeholder="Class Name" 
+                      placeholder="Class Name *" 
                       className="border-vintage-teal/30"
                       value={className}
                       onChange={(e) => setClassName(e.target.value)}
                     />
                     <Textarea 
-                      placeholder="Class Description" 
+                      placeholder="Class Description *" 
                       className="border-vintage-teal/30"
                       value={classDescription}
                       onChange={(e) => setClassDescription(e.target.value)}
                     />
                     <div className="grid grid-cols-2 gap-2">
                       <Input 
-                        placeholder="Time" 
+                        placeholder="Time *" 
                         className="border-vintage-teal/30"
                         value={classTime}
                         onChange={(e) => setClassTime(e.target.value)}
                       />
                       <Input 
-                        placeholder="Location" 
+                        placeholder="Location *" 
                         className="border-vintage-teal/30"
                         value={classLocation}
                         onChange={(e) => setClassLocation(e.target.value)}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Input 
+                        placeholder="Instructor" 
+                        className="border-vintage-teal/30"
+                        value={classInstructor}
+                        onChange={(e) => setClassInstructor(e.target.value)}
+                      />
+                      <Input 
+                        placeholder="Price (€)" 
+                        type="number"
+                        className="border-vintage-teal/30"
+                        value={classPrice}
+                        onChange={(e) => setClassPrice(e.target.value)}
                       />
                     </div>
                     <Button onClick={handleAddClass} className="w-full vintage-gradient text-vintage-cream">
@@ -222,14 +410,20 @@ const AdminPortal = () => {
                     </Button>
                     
                     <div className="mt-6">
-                      <h4 className="font-vintage font-bold text-vintage-teal mb-3">Current Classes</h4>
-                      <div className="space-y-2">
-                        {classes.map((cls) => (
+                      <h4 className="font-vintage font-bold text-vintage-teal mb-3">Current Classes ({courses.length})</h4>
+                      <div className="space-y-2 max-h-64 overflow-y-auto">
+                        {courses.map((cls) => (
                           <div key={cls.id} className="p-3 bg-vintage-cream/30 rounded-lg flex justify-between items-start">
-                            <div>
+                            <div className="flex-1">
                               <h5 className="font-semibold text-vintage-teal">{cls.name}</h5>
                               <p className="text-sm text-vintage-teal/70">{cls.description}</p>
                               <p className="text-xs text-vintage-teal/60">{cls.time} - {cls.location}</p>
+                              {cls.instructor && (
+                                <p className="text-xs text-vintage-teal/60">Instructor: {cls.instructor}</p>
+                              )}
+                              {cls.price && (
+                                <p className="text-xs text-vintage-gold font-medium">€{cls.price}</p>
+                              )}
                             </div>
                             <div className="flex gap-1">
                               <Button size="sm" variant="outline" className="border-vintage-teal text-vintage-teal">
@@ -257,13 +451,13 @@ const AdminPortal = () => {
                 <CardContent>
                   <div className="space-y-4">
                     <Input 
-                      placeholder="Event Name" 
+                      placeholder="Event Name *" 
                       className="border-vintage-teal/30"
                       value={eventName}
                       onChange={(e) => setEventName(e.target.value)}
                     />
                     <Textarea 
-                      placeholder="Event Description" 
+                      placeholder="Event Description *" 
                       className="border-vintage-teal/30"
                       value={eventDescription}
                       onChange={(e) => setEventDescription(e.target.value)}
@@ -276,7 +470,7 @@ const AdminPortal = () => {
                         onChange={(e) => setEventDate(e.target.value)}
                       />
                       <Input 
-                        placeholder="Venue" 
+                        placeholder="Venue *" 
                         className="border-vintage-teal/30"
                         value={eventVenue}
                         onChange={(e) => setEventVenue(e.target.value)}
@@ -288,14 +482,17 @@ const AdminPortal = () => {
                     </Button>
                     
                     <div className="mt-6">
-                      <h4 className="font-vintage font-bold text-vintage-teal mb-3">Current Events</h4>
-                      <div className="space-y-2">
+                      <h4 className="font-vintage font-bold text-vintage-teal mb-3">Current Events ({events.length})</h4>
+                      <div className="space-y-2 max-h-64 overflow-y-auto">
                         {events.map((event) => (
                           <div key={event.id} className="p-3 bg-vintage-cream/30 rounded-lg flex justify-between items-start">
-                            <div>
+                            <div className="flex-1">
                               <h5 className="font-semibold text-vintage-teal">{event.name}</h5>
                               <p className="text-sm text-vintage-teal/70">{event.description}</p>
                               <p className="text-xs text-vintage-teal/60">{event.date} - {event.venue}</p>
+                              {event.ticketPrice && (
+                                <p className="text-xs text-vintage-gold font-medium">€{event.ticketPrice}</p>
+                              )}
                             </div>
                             <div className="flex gap-1">
                               <Button size="sm" variant="outline" className="border-vintage-teal text-vintage-teal">
@@ -313,77 +510,6 @@ const AdminPortal = () => {
                 </CardContent>
               </Card>
             </div>
-          </TabsContent>
-
-          {/* Subscribers Management */}
-          <TabsContent value="subscribers">
-            <Card className="dance-card-hover">
-              <CardHeader>
-                <CardTitle className="flex items-center text-vintage-teal">
-                  <Users className="w-5 h-5 mr-2" />
-                  Course Subscribers ({subscribers.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Phone</TableHead>
-                        <TableHead>Course</TableHead>
-                        <TableHead>Subscription Date</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {subscribers.map((subscriber) => (
-                        <TableRow key={subscriber.id}>
-                          <TableCell className="font-medium">{subscriber.name}</TableCell>
-                          <TableCell>
-                            <div className="flex items-center">
-                              <Mail className="w-4 h-4 mr-2 text-vintage-teal" />
-                              {subscriber.email}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center">
-                              <Phone className="w-4 h-4 mr-2 text-vintage-teal" />
-                              {subscriber.phone}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <span className="px-2 py-1 bg-vintage-teal/10 text-vintage-teal rounded-full text-sm">
-                              {subscriber.course}
-                            </span>
-                          </TableCell>
-                          <TableCell>{subscriber.subscriptionDate}</TableCell>
-                          <TableCell>
-                            <div className="flex gap-2">
-                              <Button size="sm" variant="outline" className="border-vintage-teal text-vintage-teal">
-                                <Edit className="w-3 h-3" />
-                              </Button>
-                              <Button size="sm" variant="outline" className="border-red-500 text-red-500">
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-                <div className="mt-4 flex gap-2">
-                  <Button className="vintage-gradient text-vintage-cream">
-                    Export Subscribers
-                  </Button>
-                  <Button variant="outline" className="border-vintage-teal text-vintage-teal">
-                    Send Group Email
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
           </TabsContent>
 
           {/* Media Management */}

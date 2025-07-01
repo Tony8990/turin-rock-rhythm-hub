@@ -3,9 +3,14 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Filter, Play, Image as ImageIcon, Calendar } from "lucide-react";
+import { useAppContext } from "@/contexts/AppContext";
+import MediaViewer from "./MediaViewer";
 
 const MediaGallery = () => {
   const [activeFilter, setActiveFilter] = useState('all');
+  const [selectedMedia, setSelectedMedia] = useState<any>(null);
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const { mediaItems } = useAppContext();
 
   const filters = [
     { id: 'all', label: 'All Media', icon: Filter },
@@ -14,66 +19,26 @@ const MediaGallery = () => {
     { id: 'events', label: 'Events', icon: Calendar }
   ];
 
-  const mediaItems = [
-    {
-      id: 1,
-      type: 'video',
-      category: 'videos',
-      title: 'Rockabilly Basics Tutorial',
-      thumbnail: '🎬',
-      description: 'Learn the fundamental steps of rockabilly dancing',
-      date: 'March 2024'
-    },
-    {
-      id: 2,
-      type: 'photo',
-      category: 'photos',
-      title: 'Studio Practice Session',
-      thumbnail: '📸',
-      description: 'Our students practicing their moves',
-      date: 'February 2024'
-    },
-    {
-      id: 3,
-      type: 'event',
-      category: 'events',
-      title: 'Turin Dance Festival 2024',
-      thumbnail: '🎪',
-      description: 'Our performance at the annual dance festival',
-      date: 'January 2024'
-    },
-    {
-      id: 4,
-      type: 'video',
-      category: 'videos',
-      title: 'Swing Dance Choreography',
-      thumbnail: '💃',
-      description: 'Advanced swing routine by our instructors',
-      date: 'March 2024'
-    },
-    {
-      id: 5,
-      type: 'photo',
-      category: 'photos',
-      title: 'Vintage Night Photos',
-      thumbnail: '📷',
-      description: 'Highlights from our monthly vintage night',
-      date: 'February 2024'
-    },
-    {
-      id: 6,
-      type: 'event',
-      category: 'events',
-      title: 'Beginner Showcase',
-      thumbnail: '🌟',
-      description: 'New students showing off their progress',
-      date: 'March 2024'
-    }
-  ];
-
   const filteredItems = activeFilter === 'all' 
     ? mediaItems 
     : mediaItems.filter(item => item.category === activeFilter);
+
+  const handleMediaClick = (item: any) => {
+    setSelectedMedia(item);
+    setIsViewerOpen(true);
+  };
+
+  const handleNext = () => {
+    const currentIndex = filteredItems.findIndex(item => item.id === selectedMedia?.id);
+    const nextIndex = (currentIndex + 1) % filteredItems.length;
+    setSelectedMedia(filteredItems[nextIndex]);
+  };
+
+  const handlePrevious = () => {
+    const currentIndex = filteredItems.findIndex(item => item.id === selectedMedia?.id);
+    const previousIndex = currentIndex === 0 ? filteredItems.length - 1 : currentIndex - 1;
+    setSelectedMedia(filteredItems[previousIndex]);
+  };
 
   return (
     <section id="gallery" className="py-20 bg-white">
@@ -114,19 +79,26 @@ const MediaGallery = () => {
           {filteredItems.map((item, index) => (
             <Card 
               key={item.id} 
-              className="dance-card-hover border-vintage-teal/20 overflow-hidden animate-fade-in-up"
+              className="dance-card-hover border-vintage-teal/20 overflow-hidden animate-fade-in-up cursor-pointer group"
               style={{ animationDelay: `${index * 0.1}s` }}
+              onClick={() => handleMediaClick(item)}
             >
               <CardContent className="p-0">
                 <div className="relative">
                   {/* Thumbnail */}
-                  <div className="h-48 bg-gradient-to-br from-vintage-teal to-vintage-teal-light flex items-center justify-center text-6xl">
-                    {item.thumbnail}
-                  </div>
-                  
-                  {/* Play button for videos */}
-                  {item.type === 'video' && (
-                    <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="h-48 bg-gradient-to-br from-vintage-teal to-vintage-teal-light flex items-center justify-center text-6xl relative overflow-hidden">
+                    {item.type === 'photo' && item.fullImageUrl ? (
+                      <img 
+                        src={item.fullImageUrl} 
+                        alt={item.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-6xl">{item.thumbnail}</span>
+                    )}
+                    
+                    {/* Hover overlay */}
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <Button 
                         size="icon" 
                         className="w-16 h-16 rounded-full bg-white/20 hover:bg-white/30 text-white border-0"
@@ -134,7 +106,7 @@ const MediaGallery = () => {
                         <Play className="w-8 h-8" />
                       </Button>
                     </div>
-                  )}
+                  </div>
                   
                   {/* Type badge */}
                   <div className="absolute top-3 right-3">
@@ -148,7 +120,7 @@ const MediaGallery = () => {
                   <h3 className="text-xl font-vintage font-bold text-vintage-teal mb-2">
                     {item.title}
                   </h3>
-                  <p className="text-vintage-teal/70 mb-3">
+                  <p className="text-vintage-teal/70 mb-3 line-clamp-2">
                     {item.description}
                   </p>
                   <div className="flex items-center justify-between">
@@ -159,6 +131,10 @@ const MediaGallery = () => {
                       size="sm" 
                       variant="outline"
                       className="border-vintage-teal text-vintage-teal hover:bg-vintage-teal hover:text-vintage-cream"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleMediaClick(item);
+                      }}
                     >
                       View
                     </Button>
@@ -179,6 +155,15 @@ const MediaGallery = () => {
           </Button>
         </div>
       </div>
+
+      {/* Media Viewer */}
+      <MediaViewer
+        item={selectedMedia}
+        isOpen={isViewerOpen}
+        onClose={() => setIsViewerOpen(false)}
+        onNext={filteredItems.length > 1 ? handleNext : undefined}
+        onPrevious={filteredItems.length > 1 ? handlePrevious : undefined}
+      />
     </section>
   );
 };

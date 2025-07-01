@@ -13,16 +13,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, Clock, MapPin, User, Mail, Phone, MessageSquare } from "lucide-react";
+import { useAppContext } from "@/contexts/AppContext";
+import { Calendar, Clock, MapPin, User, Mail, Phone, MessageSquare, Euro } from "lucide-react";
 
 const CourseSubscriptionForm = () => {
   const [formData, setFormData] = useState({
@@ -35,13 +28,7 @@ const CourseSubscriptionForm = () => {
   });
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
-
-  const courses = [
-    { id: "beginner-rockabilly", name: "Beginner Rockabilly", time: "7:00 PM", location: "Studio A" },
-    { id: "advanced-swing", name: "Advanced Swing", time: "8:30 PM", location: "Studio B" },
-    { id: "lindy-hop", name: "Lindy Hop Basics", time: "6:00 PM", location: "Studio A" },
-    { id: "charleston", name: "Charleston Style", time: "9:00 PM", location: "Studio C" },
-  ];
+  const { courses, addSubscriber } = useAppContext();
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -62,8 +49,15 @@ const CourseSubscriptionForm = () => {
       return;
     }
 
-    // Here you would typically send the data to your backend
-    console.log("Form submitted:", formData);
+    // Add subscriber using context
+    addSubscriber({
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      course: formData.course,
+      experience: formData.experience,
+      message: formData.message
+    });
     
     toast({
       title: "Registration Successful! 🎉",
@@ -185,6 +179,7 @@ const CourseSubscriptionForm = () => {
                       />
                       <div className="flex-1">
                         <h4 className="font-semibold text-vintage-teal">{course.name}</h4>
+                        <p className="text-sm text-vintage-teal/70 mb-1">{course.description}</p>
                         <div className="flex items-center space-x-4 text-sm text-vintage-teal/70">
                           <span className="flex items-center">
                             <Clock className="w-3 h-3 mr-1" />
@@ -194,7 +189,16 @@ const CourseSubscriptionForm = () => {
                             <MapPin className="w-3 h-3 mr-1" />
                             {course.location}
                           </span>
+                          {course.price && (
+                            <span className="flex items-center">
+                              <Euro className="w-3 h-3 mr-1" />
+                              {course.price}
+                            </span>
+                          )}
                         </div>
+                        {course.instructor && (
+                          <p className="text-xs text-vintage-teal/60 mt-1">Instructor: {course.instructor}</p>
+                        )}
                       </div>
                     </div>
                   </div>
