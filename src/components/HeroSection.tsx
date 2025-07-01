@@ -1,6 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Play, Calendar, Users } from "lucide-react";
+import CourseSubscriptionForm from "./CourseSubscriptionForm";
 
 const HeroSection = () => {
   return (
@@ -27,14 +28,7 @@ const HeroSection = () => {
                 <Play className="mr-2 h-5 w-5" />
                 Watch Our Classes
               </Button>
-              <Button 
-                variant="outline" 
-                size="lg"
-                className="border-vintage-teal text-vintage-teal hover:bg-vintage-teal hover:text-vintage-cream transition-all"
-              >
-                <Calendar className="mr-2 h-5 w-5" />
-                Book a Class
-              </Button>
+              <CourseSubscriptionForm />
             </div>
 
             {/* Stats */}
