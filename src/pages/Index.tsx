@@ -1,12 +1,29 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { useState } from "react";
+import HeroSection from "@/components/HeroSection";
+import CarouselSection from "@/components/CarouselSection";
+import MediaGallery from "@/components/MediaGallery";
+import NewsletterSection from "@/components/NewsletterSection";
+import Navigation from "@/components/Navigation";
+import AdminPortal from "@/components/AdminPortal";
 
 const Index = () => {
+  const [showAdmin, setShowAdmin] = useState(false);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-vintage-cream via-white to-vintage-cream/50">
+      <Navigation onAdminToggle={() => setShowAdmin(!showAdmin)} showAdmin={showAdmin} />
+      
+      {showAdmin ? (
+        <AdminPortal />
+      ) : (
+        <>
+          <HeroSection />
+          <CarouselSection />
+          <MediaGallery />
+          <NewsletterSection />
+        </>
+      )}
     </div>
   );
 };
