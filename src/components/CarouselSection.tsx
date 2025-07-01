@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight, Clock, MapPin, Users } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, MapPin, Users, Star } from "lucide-react";
 
 const CarouselSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -10,50 +10,54 @@ const CarouselSection = () => {
   const slides = [
     {
       id: 1,
-      title: "Beginner Rockabilly",
-      description: "Perfect for newcomers to rockabilly dancing. Learn the basic steps and groove to classic tunes.",
-      time: "7:00 PM - 8:30 PM",
-      location: "Main Studio",
+      title: "Rockabilly per Principianti",
+      description: "Perfetto per i nuovi arrivati nel mondo del rockabilly. Impara i passi base e muoviti al ritmo dei classici.",
+      time: "19:00 - 20:30",
+      location: "Studio Principale",
       participants: "12-15",
       image: "🕺",
-      color: "from-vintage-teal to-vintage-teal-light"
+      level: "Principiante",
+      color: "from-primary/80 to-primary"
     },
     {
       id: 2,
-      title: "Swing Fundamentals",
-      description: "Master the essential swing dance moves with our experienced instructors.",
-      time: "6:00 PM - 7:30 PM",
+      title: "Fondamenti di Swing",
+      description: "Padroneggia i movimenti essenziali dello swing dance con i nostri istruttori esperti.",
+      time: "18:00 - 19:30",
       location: "Studio A",
       participants: "10-12",
       image: "💃",
-      color: "from-vintage-red-vintage to-vintage-gold"
+      level: "Intermedio",
+      color: "from-accent/80 to-accent"
     },
     {
       id: 3,
-      title: "Advanced Performance",
-      description: "For experienced dancers ready to take their skills to the performance level.",
-      time: "8:30 PM - 10:00 PM",
-      location: "Main Studio",
+      title: "Performance Avanzata",
+      description: "Per ballerini esperti pronti a portare le loro abilità al livello delle performance.",
+      time: "20:30 - 22:00",
+      location: "Studio Principale",
       participants: "8-10",
       image: "🎭",
-      color: "from-vintage-gold to-vintage-cream-dark"
+      level: "Avanzato",
+      color: "from-primary/60 to-accent/80"
     },
     {
       id: 4,
-      title: "Weekend Social Dance",
-      description: "Join our social dancing events every Saturday night. All levels welcome!",
-      time: "8:00 PM - 11:00 PM",
-      location: "Grand Ballroom",
+      title: "Ballo Sociale Weekend",
+      description: "Unisciti ai nostri eventi di ballo sociale ogni sabato sera. Tutti i livelli benvenuti!",
+      time: "20:00 - 23:00",
+      location: "Sala Grande",
       participants: "30-50",
       image: "🎪",
-      color: "from-vintage-teal-dark to-vintage-teal"
+      level: "Tutti i Livelli",
+      color: "from-accent/60 to-primary/60"
     }
   ];
 
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 5000);
+    }, 6000);
     return () => clearInterval(timer);
   }, [slides.length]);
 
@@ -66,59 +70,83 @@ const CarouselSection = () => {
   };
 
   return (
-    <section id="carousel" className="py-20 bg-gradient-to-r from-vintage-cream/30 to-white">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12 animate-fade-in-up">
-          <h2 className="text-4xl md:text-5xl font-vintage font-bold text-vintage-teal mb-4">
-            Our Dance Classes
+    <section id="carousel" className="py-20 relative overflow-hidden">
+      {/* Background elements */}
+      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-card/50 to-background/80"></div>
+      <div className="absolute top-20 right-20 w-32 h-32 rounded-full bg-primary/10 animate-float"></div>
+      <div className="absolute bottom-10 left-10 w-24 h-24 rounded-full bg-accent/10 animate-float" style={{ animationDelay: '1.5s' }}></div>
+
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="text-center mb-16 animate-fade-in-up">
+          <div className="flex items-center justify-center space-x-2 mb-6">
+            <Star className="w-6 h-6 text-primary animate-pulse" />
+            <span className="text-primary font-medium text-sm tracking-wider uppercase">
+              I Nostri Corsi
+            </span>
+          </div>
+          <h2 className="text-5xl md:text-6xl font-display font-black gradient-text mb-6">
+            Lezioni di Ballo
           </h2>
-          <p className="text-xl text-vintage-teal/70 max-w-2xl mx-auto">
-            Discover the perfect class for your skill level and dancing style
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            Scopri il corso perfetto per il tuo livello e stile di ballo
           </p>
         </div>
 
-        <div className="relative max-w-4xl mx-auto">
+        <div className="relative max-w-6xl mx-auto">
           {/* Main Carousel */}
-          <div className="relative overflow-hidden rounded-2xl retro-shadow">
+          <div className="relative overflow-hidden rounded-3xl glow-effect">
             <div 
-              className="flex transition-transform duration-500 ease-in-out"
+              className="flex transition-transform duration-700 ease-in-out"
               style={{ transform: `translateX(-${currentSlide * 100}%)` }}
             >
               {slides.map((slide, index) => (
                 <div key={slide.id} className="w-full flex-shrink-0">
-                  <Card className={`bg-gradient-to-br ${slide.color} border-0 text-white`}>
-                    <CardContent className="p-8 md:p-12">
-                      <div className="grid md:grid-cols-2 gap-8 items-center">
-                        <div>
-                          <div className="text-6xl mb-4 text-center">
-                            {slide.image}
+                  <Card className={`bg-gradient-to-br ${slide.color} border-0 text-white overflow-hidden`}>
+                    <CardContent className="p-0">
+                      <div className="grid md:grid-cols-2 min-h-[500px]">
+                        {/* Content Side */}
+                        <div className="p-12 flex flex-col justify-center space-y-6">
+                          <div className="space-y-4">
+                            <div className="flex items-center space-x-3">
+                              <span className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">
+                                {slide.level}
+                              </span>
+                            </div>
+                            <h3 className="text-4xl font-display font-bold text-shadow animate-slide-up">
+                              {slide.title}
+                            </h3>
+                            <p className="text-lg opacity-90 leading-relaxed animate-fade-in-up stagger-1">
+                              {slide.description}
+                            </p>
                           </div>
-                          <h3 className="text-3xl font-vintage font-bold mb-4">
-                            {slide.title}
-                          </h3>
-                          <p className="text-lg mb-6 opacity-90">
-                            {slide.description}
-                          </p>
+                          
+                          <div className="space-y-4 animate-fade-in-up stagger-2">
+                            <div className="flex items-center space-x-3 bg-white/10 backdrop-blur-sm rounded-xl p-4 hover:bg-white/15 transition-all duration-300">
+                              <Clock className="w-5 h-5 flex-shrink-0" />
+                              <span className="font-medium">{slide.time}</span>
+                            </div>
+                            <div className="flex items-center space-x-3 bg-white/10 backdrop-blur-sm rounded-xl p-4 hover:bg-white/15 transition-all duration-300">
+                              <MapPin className="w-5 h-5 flex-shrink-0" />
+                              <span className="font-medium">{slide.location}</span>
+                            </div>
+                            <div className="flex items-center space-x-3 bg-white/10 backdrop-blur-sm rounded-xl p-4 hover:bg-white/15 transition-all duration-300">
+                              <Users className="w-5 h-5 flex-shrink-0" />
+                              <span className="font-medium">{slide.participants} ballerini</span>
+                            </div>
+                          </div>
+
                           <Button 
-                            variant="secondary"
-                            className="bg-white/20 hover:bg-white/30 text-white border-white/20"
+                            size="lg"
+                            className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm hover:scale-105 transition-all duration-300 self-start px-8 py-4 h-auto font-semibold animate-fade-in-up stagger-3"
                           >
-                            Join This Class
+                            Unisciti a Questo Corso
                           </Button>
                         </div>
-                        
-                        <div className="space-y-4">
-                          <div className="flex items-center space-x-3 bg-white/10 rounded-lg p-3">
-                            <Clock className="w-5 h-5" />
-                            <span>{slide.time}</span>
-                          </div>
-                          <div className="flex items-center space-x-3 bg-white/10 rounded-lg p-3">
-                            <MapPin className="w-5 h-5" />
-                            <span>{slide.location}</span>
-                          </div>
-                          <div className="flex items-center space-x-3 bg-white/10 rounded-lg p-3">
-                            <Users className="w-5 h-5" />
-                            <span>{slide.participants} dancers</span>
+
+                        {/* Image Side */}
+                        <div className="bg-white/5 backdrop-blur-sm flex items-center justify-center p-12">
+                          <div className="text-9xl animate-float filter drop-shadow-2xl">
+                            {slide.image}
                           </div>
                         </div>
                       </div>
@@ -134,30 +162,30 @@ const CarouselSection = () => {
             variant="outline"
             size="icon"
             onClick={prevSlide}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white border-vintage-teal text-vintage-teal"
+            className="absolute left-6 top-1/2 transform -translate-y-1/2 backdrop-blur-glass border-primary/30 hover:border-primary hover:bg-primary/20 w-12 h-12 animate-scale-in"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-6 w-6" />
           </Button>
           
           <Button
             variant="outline"
             size="icon"
             onClick={nextSlide}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white border-vintage-teal text-vintage-teal"
+            className="absolute right-6 top-1/2 transform -translate-y-1/2 backdrop-blur-glass border-primary/30 hover:border-primary hover:bg-primary/20 w-12 h-12 animate-scale-in stagger-1"
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-6 w-6" />
           </Button>
 
           {/* Dots Indicator */}
-          <div className="flex justify-center space-x-2 mt-6">
+          <div className="flex justify-center space-x-3 mt-8">
             {slides.map((_, index) => (
               <button
                 key={index}
                 onClick={() => setCurrentSlide(index)}
-                className={`w-3 h-3 rounded-full transition-all ${
+                className={`h-3 transition-all duration-300 rounded-full ${
                   index === currentSlide 
-                    ? 'bg-vintage-teal scale-125' 
-                    : 'bg-vintage-teal/30 hover:bg-vintage-teal/50'
+                    ? 'bg-primary w-8 glow-effect' 
+                    : 'bg-muted w-3 hover:bg-primary/50'
                 }`}
               />
             ))}

@@ -6,6 +6,7 @@ import MediaGallery from "@/components/MediaGallery";
 import NewsletterSection from "@/components/NewsletterSection";
 import Navigation from "@/components/Navigation";
 import AdminPortal from "@/components/AdminPortal";
+import Footer from "@/components/Footer";
 import { AppProvider } from "@/contexts/AppContext";
 
 const Index = () => {
@@ -13,7 +14,7 @@ const Index = () => {
 
   return (
     <AppProvider>
-      <div className="min-h-screen bg-gradient-to-br from-vintage-cream via-white to-vintage-cream/50">
+      <div className="min-h-screen">
         <Navigation onAdminToggle={() => setShowAdmin(!showAdmin)} showAdmin={showAdmin} />
         
         {showAdmin ? (
@@ -24,6 +25,7 @@ const Index = () => {
             <CarouselSection />
             <MediaGallery />
             <NewsletterSection />
+            <Footer />
           </>
         )}
       </div>
