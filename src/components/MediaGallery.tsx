@@ -1,183 +1,189 @@
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Filter, Play, Image as ImageIcon, Calendar, Sparkles } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, MapPin, Music, Image as ImageIcon, Video, Clock } from "lucide-react";
 import { useAppContext } from "@/contexts/AppContext";
 import MediaViewer from "./MediaViewer";
+import EventDialog from "./EventDialog";
 
 const MediaGallery = () => {
-  const [activeFilter, setActiveFilter] = useState('all');
+  const { mediaItems, events } = useAppContext();
   const [selectedMedia, setSelectedMedia] = useState<any>(null);
-  const [isViewerOpen, setIsViewerOpen] = useState(false);
-  const { mediaItems } = useAppContext();
 
-  const filters = [
-    { id: 'all', label: 'Tutti i Media', icon: Filter },
-    { id: 'photos', label: 'Foto', icon: ImageIcon },
-    { id: 'videos', label: 'Video', icon: Play },
-    { id: 'events', label: 'Eventi', icon: Calendar }
+  // Combine media items and events for display
+  const allItems = [
+    ...mediaItems.map(item => ({ ...item, type: 'media' })),
+    ...events.map(event => ({ ...event, type: 'event' }))
   ];
 
-  const filteredItems = activeFilter === 'all' 
-    ? mediaItems 
-    : mediaItems.filter(item => item.category === activeFilter);
-
-  const handleMediaClick = (item: any) => {
-    setSelectedMedia(item);
-    setIsViewerOpen(true);
+  const getTypeIcon = (type: string, mediaType?: string) => {
+    if (type === 'event') return Calendar;
+    if (mediaType === 'image') return ImageIcon;
+    if (mediaType === 'video') return Video;
+    return Music;
   };
 
-  const handleNext = () => {
-    const currentIndex = filteredItems.findIndex(item => item.id === selectedMedia?.id);
-    const nextIndex = (currentIndex + 1) % filteredItems.length;
-    setSelectedMedia(filteredItems[nextIndex]);
+  const getTypeColor = (type: string, mediaType?: string) => {
+    if (type === 'event') return 'text-accent';
+    if (mediaType === 'image') return 'text-primary';
+    if (mediaType === 'video') return 'text-secondary-foreground';
+    return 'text-muted-foreground';
   };
 
-  const handlePrevious = () => {
-    const currentIndex = filteredItems.findIndex(item => item.id === selectedMedia?.id);
-    const previousIndex = currentIndex === 0 ? filteredItems.length - 1 : currentIndex - 1;
-    setSelectedMedia(filteredItems[previousIndex]);
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('it-IT', { 
+      day: 'numeric', 
+      month: 'long', 
+      year: 'numeric' 
+    });
   };
 
   return (
-    <section id="gallery" className="py-20 relative overflow-hidden">
-      {/* Background elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-card/30 to-background"></div>
-      <div className="absolute top-32 left-16 w-40 h-40 rounded-full bg-primary/5 animate-float"></div>
-      <div className="absolute bottom-20 right-12 w-28 h-28 rounded-full bg-accent/5 animate-float" style={{ animationDelay: '2s' }}></div>
-
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-16 animate-fade-in-up">
-          <div className="flex items-center justify-center space-x-2 mb-6">
-            <Sparkles className="w-6 h-6 text-primary animate-pulse" />
-            <span className="text-primary font-medium text-sm tracking-wider uppercase">
-              La Nostra Galleria
-            </span>
-          </div>
-          <h2 className="text-5xl md:text-6xl font-display font-black gradient-text mb-6">
-            Galleria Media
+    <section id="media" className="py-24 px-4 bg-gradient-to-b from-background/50 to-background">
+      <div className="container mx-auto">
+        <div className="text-center mb-16 animate-slide-up">
+          <h2 className="text-4xl md:text-5xl font-display font-bold gradient-text mb-4 text-shadow">
+            Media & Eventi
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Esplora la nostra collezione di video di ballo, foto e momenti salienti degli eventi
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Scopri i nostri ultimi video, foto e eventi rockabilly
           </p>
         </div>
 
-        {/* Filter Buttons */}
-        <div className="flex flex-wrap justify-center gap-4 mb-16 animate-fade-in-up stagger-1">
-          {filters.map((filter, index) => {
-            const Icon = filter.icon;
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {allItems.map((item, index) => {
+            const TypeIcon = getTypeIcon(item.type, item.mediaType);
+            const isEvent = item.type === 'event';
+            
             return (
-              <Button
-                key={filter.id}
-                variant={activeFilter === filter.id ? "default" : "outline"}
-                onClick={() => setActiveFilter(filter.id)}
-                className={`${
-                  activeFilter === filter.id
-                    ? 'modern-gradient text-background hover:scale-105 glow-effect'
-                    : 'backdrop-blur-glass border-primary/30 hover:border-primary hover:bg-primary/20'
-                } transition-all duration-300 px-6 py-3 h-auto font-medium animate-scale-in`}
-                style={{ animationDelay: `${index * 0.1}s` }}
+              <Card 
+                key={`${item.type}-${item.id}`} 
+                className={`cursor-pointer card-hover rockabilly-card overflow-hidden animate-scale-in stagger-${Math.min(index % 4 + 1, 4)}`}
+                onClick={() => {
+                  if (isEvent) {
+                    // Event dialog will be handled by EventDialog component
+                  } else {
+                    setSelectedMedia(item);
+                  }
+                }}
               >
-                <Icon className="w-5 h-5 mr-2" />
-                {filter.label}
-              </Button>
+                <CardContent className="p-0">
+                  {/* Media/Event Header */}
+                  <div className="relative h-48 overflow-hidden">
+                    {!isEvent && item.url ? (
+                      item.mediaType === 'video' ? (
+                        <video 
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          poster={item.thumbnail}
+                        >
+                          <source src={item.url} type="video/mp4" />
+                        </video>
+                      ) : (
+                        <img 
+                          src={item.url} 
+                          alt={item.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                      )
+                    ) : (
+                      // Placeholder for events or media without URL
+                      <div className="w-full h-full modern-gradient flex items-center justify-center relative overflow-hidden">
+                        <div className="absolute inset-0 bg-black/20" />
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent_70%)]" />
+                        
+                        {/* Vinyl Record for Events */}
+                        {isEvent && (
+                          <div className="relative z-10">
+                            <div className="w-24 h-24 rounded-full vinyl-record border-4 border-amber-400 flex items-center justify-center animate-vinyl-spin">
+                              <div className="w-6 h-6 rounded-full bg-amber-400" />
+                            </div>
+                          </div>
+                        )}
+                        
+                        <div className="relative z-10 text-center">
+                          <TypeIcon className={`w-12 h-12 mx-auto mb-2 ${getTypeColor(item.type, item.mediaType)} animate-float`} />
+                          <p className="text-primary-foreground font-semibold">
+                            {isEvent ? 'Evento Speciale' : 'Media Rockabilly'}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Type Badge */}
+                    <Badge className="absolute top-4 right-4 bg-accent/90 text-accent-foreground animate-glow-pulse">
+                      {isEvent ? '🎪 Evento' : item.mediaType === 'video' ? '🎬 Video' : '📸 Foto'}
+                    </Badge>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-6">
+                    <h3 className="text-xl font-display font-bold text-foreground mb-2 gradient-text">
+                      {item.title || item.name}
+                    </h3>
+                    <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+                      {item.description}
+                    </p>
+
+                    {/* Event Details */}
+                    {isEvent && (
+                      <div className="space-y-2 mb-4">
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <Calendar className="w-4 h-4 mr-2 text-primary animate-float" />
+                          <span>{formatDate(item.date)}</span>
+                        </div>
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <MapPin className="w-4 h-4 mr-2 text-accent animate-float stagger-1" />
+                          <span>{item.venue}</span>
+                        </div>
+                        {item.ticketPrice && (
+                          <div className="flex items-center text-sm">
+                            <Clock className="w-4 h-4 mr-2 text-secondary-foreground animate-float stagger-2" />
+                            <span className="font-bold text-accent">€{item.ticketPrice}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Action Area */}
+                    <div className="mt-4 p-3 rounded-lg modern-gradient text-primary-foreground animate-rotate-in">
+                      <div className="text-center">
+                        <p className="text-sm font-medium">
+                          {isEvent ? '🎸 Scopri l\'evento' : '🎵 Visualizza media'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             );
           })}
         </div>
 
-        {/* Media Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {filteredItems.map((item, index) => (
-            <Card 
-              key={item.id} 
-              className="card-hover backdrop-blur-glass border-primary/20 overflow-hidden animate-scale-in cursor-pointer group"
-              style={{ animationDelay: `${index * 0.1}s` }}
-              onClick={() => handleMediaClick(item)}
-            >
-              <CardContent className="p-0">
-                <div className="relative">
-                  {/* Thumbnail */}
-                  <div className="h-64 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-6xl relative overflow-hidden">
-                    {item.type === 'photo' && item.fullImageUrl ? (
-                      <img 
-                        src={item.fullImageUrl} 
-                        alt={item.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                    ) : (
-                      <span className="text-6xl filter drop-shadow-lg group-hover:scale-110 transition-transform duration-300">
-                        {item.thumbnail}
-                      </span>
-                    )}
-                    
-                    {/* Hover overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
-                      <Button 
-                        size="icon" 
-                        className="w-16 h-16 rounded-full backdrop-blur-sm bg-white/20 hover:bg-white/30 text-white border-0 hover:scale-110 transition-all duration-300"
-                      >
-                        <Play className="w-8 h-8" />
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  {/* Type badge */}
-                  <div className="absolute top-4 right-4">
-                    <span className="bg-primary text-background px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
-                      {item.type}
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="p-6 backdrop-blur-glass">
-                  <h3 className="text-xl font-display font-bold gradient-text mb-3">
-                    {item.title}
-                  </h3>
-                  <p className="text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
-                    {item.description}
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground font-medium">
-                      {item.date}
-                    </span>
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      className="border-primary/30 text-primary hover:bg-primary hover:text-background transition-all duration-300 hover:scale-105"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleMediaClick(item);
-                      }}
-                    >
-                      Visualizza
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {/* Media Viewer Modal */}
+        {selectedMedia && (
+          <MediaViewer 
+            media={selectedMedia}
+            onClose={() => setSelectedMedia(null)}
+          />
+        )}
 
-        {/* Load More Button */}
-        <div className="text-center animate-fade-in-up">
-          <Button 
-            size="lg"
-            className="modern-gradient hover:scale-105 transition-all duration-300 glow-effect px-8 py-4 h-auto font-semibold"
-          >
-            Carica Altri Media
-          </Button>
+        {/* Event Dialogs */}
+        {events.map(event => (
+          <EventDialog key={`dialog-${event.id}`} event={event}>
+            <div /> {/* Empty trigger, handled by card click */}
+          </EventDialog>
+        ))}
+
+        {/* Decorative Elements */}
+        <div className="flex justify-center mt-16 space-x-8 opacity-60">
+          <div className="text-3xl animate-float">🎸</div>
+          <div className="text-3xl animate-float stagger-1">🎤</div>
+          <div className="text-3xl animate-float stagger-2">🎵</div>
+          <div className="text-3xl animate-float stagger-3">🎭</div>
         </div>
       </div>
-
-      {/* Media Viewer */}
-      <MediaViewer
-        item={selectedMedia}
-        isOpen={isViewerOpen}
-        onClose={() => setIsViewerOpen(false)}
-        onNext={filteredItems.length > 1 ? handleNext : undefined}
-        onPrevious={filteredItems.length > 1 ? handlePrevious : undefined}
-      />
     </section>
   );
 };
