@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -58,19 +57,20 @@ const AdminPortal = () => {
       setIsAuthenticated(true);
       markNotificationsAsRead();
       toast({
-        title: "Welcome Admin!",
-        description: "You have successfully logged into the admin portal.",
+        title: "Benvenuto Admin!",
+        description: "Hai effettuato l'accesso al portale amministrativo con successo.",
       });
     } else {
       toast({
-        title: "Access Denied",
-        description: "Invalid password. Please try again.",
+        title: "Accesso Negato",
+        description: "Password non valida. Riprova.",
         variant: "destructive",
       });
     }
   };
 
-  const handleAddClass = () => {
+  const handleAddClass = (e: React.FormEvent) => {
+    e.preventDefault();
     if (className && classDescription && classTime && classLocation) {
       addCourse({
         name: className,
@@ -89,19 +89,20 @@ const AdminPortal = () => {
       setClassPrice("");
       
       toast({
-        title: "Class Added! 🎉",
-        description: `${className} has been added successfully.`,
+        title: "Corso Aggiunto! 🎉",
+        description: `${className} è stato aggiunto con successo.`,
       });
     } else {
       toast({
-        title: "Error",
-        description: "Please fill in all required fields.",
+        title: "Errore",
+        description: "Compila tutti i campi obbligatori.",
         variant: "destructive",
       });
     }
   };
 
-  const handleAddEvent = () => {
+  const handleAddEvent = (e: React.FormEvent) => {
+    e.preventDefault();
     if (eventName && eventDescription && eventDate && eventVenue) {
       addEvent({
         name: eventName,
@@ -116,13 +117,13 @@ const AdminPortal = () => {
       setEventVenue("");
       
       toast({
-        title: "Event Added! 🎉",
-        description: `${eventName} has been added successfully.`,
+        title: "Evento Aggiunto! 🎉",
+        description: `${eventName} è stato aggiunto con successo.`,
       });
     } else {
       toast({
-        title: "Error",
-        description: "Please fill in all fields.",
+        title: "Errore",
+        description: "Compila tutti i campi.",
         variant: "destructive",
       });
     }
@@ -132,23 +133,23 @@ const AdminPortal = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-vintage-cream to-white pt-24">
-        <Card className="w-full max-w-md retro-shadow">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-card to-secondary pt-24">
+        <Card className="w-full max-w-md animate-scale-in retro-shadow backdrop-blur-glass">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-vintage text-vintage-teal flex items-center justify-center">
+            <CardTitle className="text-2xl gradient-text flex items-center justify-center animate-glow-pulse">
               {unreadNotifications > 0 && (
                 <div className="relative mr-3">
-                  <Bell className="w-6 h-6 text-vintage-gold" />
-                  <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1 py-0 min-w-[1.2rem] h-5 rounded-full flex items-center justify-center">
+                  <Bell className="w-6 h-6 text-accent" />
+                  <Badge className="absolute -top-2 -right-2 bg-destructive text-white text-xs px-1 py-0 min-w-[1.2rem] h-5 rounded-full flex items-center justify-center">
                     {unreadNotifications}
                   </Badge>
                 </div>
               )}
-              Admin Portal Access
+              Accesso Portale Admin
             </CardTitle>
             {unreadNotifications > 0 && (
-              <p className="text-vintage-gold text-sm font-medium">
-                {unreadNotifications} new registration{unreadNotifications > 1 ? 's' : ''}!
+              <p className="text-accent text-sm font-medium animate-float">
+                {unreadNotifications} nuova registrazione{unreadNotifications > 1 ? 'i' : ''}!
               </p>
             )}
           </CardHeader>
@@ -156,20 +157,20 @@ const AdminPortal = () => {
             <div className="space-y-4">
               <Input
                 type="password"
-                placeholder="Enter admin password"
+                placeholder="Inserisci password admin"
                 value={adminPassword}
                 onChange={(e) => setAdminPassword(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-                className="border-vintage-teal/30 focus:border-vintage-teal"
+                className="border-primary/30 focus:border-primary focus:ring-primary/20"
               />
               <Button 
                 onClick={handleLogin}
-                className="w-full vintage-gradient text-vintage-cream"
+                className="w-full modern-gradient text-primary-foreground hover:scale-105 transition-transform duration-300"
               >
-                Login to Admin Portal
+                Accedi al Portale Admin
               </Button>
-              <p className="text-xs text-vintage-teal/60 text-center">
-                Demo password: rockinturin2024
+              <p className="text-xs text-muted-foreground text-center">
+                Password demo: rockinturin2024
               </p>
             </div>
           </CardContent>
@@ -179,84 +180,83 @@ const AdminPortal = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-vintage-cream to-white pt-24">
+    <div className="min-h-screen bg-gradient-to-br from-background via-card to-secondary pt-24">
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8 animate-fade-in-up flex items-center justify-between">
+        <div className="mb-8 animate-slide-up flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-vintage font-bold text-vintage-teal mb-2">
-              Admin Portal
+            <h1 className="text-4xl font-display font-bold gradient-text mb-2 animate-float">
+              Portale Amministrativo
             </h1>
-            <p className="text-vintage-teal/70">
-              Manage your dance school content and settings
+            <p className="text-muted-foreground">
+              Gestisci i contenuti e le impostazioni della tua scuola di ballo
             </p>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <Bell className="w-5 h-5 text-vintage-teal" />
-              <span className="text-vintage-teal font-medium">
-                {subscribers.length} Total Subscribers
+            <div className="flex items-center space-x-2 backdrop-blur-glass rounded-lg px-4 py-2">
+              <Bell className="w-5 h-5 text-primary" />
+              <span className="text-foreground font-medium">
+                {subscribers.length} Iscritti Totali
               </span>
             </div>
             <Button
               onClick={() => setIsAuthenticated(false)}
               variant="outline"
-              className="border-vintage-teal text-vintage-teal"
+              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300"
             >
-              Logout
+              Esci
             </Button>
           </div>
         </div>
 
         <Tabs defaultValue="subscribers" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-8">
+          <TabsList className="grid w-full grid-cols-5 mb-8 backdrop-blur-glass">
             <TabsTrigger value="subscribers" className="relative">
-              Subscribers
+              Iscritti
               {unreadNotifications > 0 && (
-                <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1 py-0 min-w-[1rem] h-4 rounded-full">
+                <Badge className="absolute -top-2 -right-2 bg-destructive text-white text-xs px-1 py-0 min-w-[1rem] h-4 rounded-full animate-glow-pulse">
                   {unreadNotifications}
                 </Badge>
               )}
             </TabsTrigger>
-            <TabsTrigger value="content">Content</TabsTrigger>
+            <TabsTrigger value="content">Contenuti</TabsTrigger>
             <TabsTrigger value="media">Media</TabsTrigger>
             <TabsTrigger value="newsletter">Newsletter</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
+            <TabsTrigger value="settings">Impostazioni</TabsTrigger>
           </TabsList>
 
-          {/* Subscribers Management - Now first tab */}
+          {/* Subscribers Management */}
           <TabsContent value="subscribers">
-            <Card className="dance-card-hover">
+            <Card className="card-hover backdrop-blur-glass">
               <CardHeader>
-                <CardTitle className="flex items-center text-vintage-teal">
+                <CardTitle className="flex items-center text-primary">
                   <Users className="w-5 h-5 mr-2" />
-                  Course Subscribers ({subscribers.length})
+                  Iscritti ai Corsi ({subscribers.length})
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {/* Subscribers grouped by course */}
                 <Accordion type="multiple" className="w-full">
                   {Object.entries(subscribersByCourse).map(([courseName, courseSubscribers]) => (
-                    <AccordionItem key={courseName} value={courseName} className="border-vintage-teal/20">
-                      <AccordionTrigger className="text-vintage-teal hover:text-vintage-teal/80">
+                    <AccordionItem key={courseName} value={courseName} className="border-border">
+                      <AccordionTrigger className="text-primary hover:text-primary/80">
                         <div className="flex items-center justify-between w-full mr-4">
-                          <span className="font-vintage font-semibold">{courseName}</span>
-                          <Badge className="bg-vintage-teal text-vintage-cream">
-                            {courseSubscribers.length} subscriber{courseSubscribers.length > 1 ? 's' : ''}
+                          <span className="font-display font-semibold">{courseName}</span>
+                          <Badge className="bg-primary text-primary-foreground">
+                            {courseSubscribers.length} iscritto{courseSubscribers.length > 1 ? 'i' : ''}
                           </Badge>
                         </div>
                       </AccordionTrigger>
                       <AccordionContent>
-                        <div className="rounded-md border border-vintage-teal/20 mt-4">
+                        <div className="rounded-md border border-border/20 mt-4">
                           <Table>
                             <TableHeader>
                               <TableRow>
-                                <TableHead>Name</TableHead>
+                                <TableHead>Nome</TableHead>
                                 <TableHead>Email</TableHead>
-                                <TableHead>Phone</TableHead>
-                                <TableHead>Experience</TableHead>
-                                <TableHead>Date</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Actions</TableHead>
+                                <TableHead>Telefono</TableHead>
+                                <TableHead>Esperienza</TableHead>
+                                <TableHead>Data</TableHead>
+                                <TableHead>Stato</TableHead>
+                                <TableHead>Azioni</TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -265,19 +265,19 @@ const AdminPortal = () => {
                                   <TableCell className="font-medium">{subscriber.name}</TableCell>
                                   <TableCell>
                                     <div className="flex items-center">
-                                      <Mail className="w-4 h-4 mr-2 text-vintage-teal" />
+                                      <Mail className="w-4 h-4 mr-2 text-primary" />
                                       {subscriber.email}
                                     </div>
                                   </TableCell>
                                   <TableCell>
                                     <div className="flex items-center">
-                                      <Phone className="w-4 h-4 mr-2 text-vintage-teal" />
+                                      <Phone className="w-4 h-4 mr-2 text-primary" />
                                       {subscriber.phone}
                                     </div>
                                   </TableCell>
                                   <TableCell>
-                                    <Badge variant="outline" className="border-vintage-teal/50 text-vintage-teal">
-                                      {subscriber.experience || 'Not specified'}
+                                    <Badge variant="outline" className="border-primary/50 text-primary">
+                                      {subscriber.experience || 'Non specificato'}
                                     </Badge>
                                   </TableCell>
                                   <TableCell>{subscriber.subscriptionDate}</TableCell>
@@ -296,10 +296,10 @@ const AdminPortal = () => {
                                   </TableCell>
                                   <TableCell>
                                     <div className="flex gap-2">
-                                      <Button size="sm" variant="outline" className="border-vintage-teal text-vintage-teal">
+                                      <Button size="sm" variant="outline" className="border-primary text-primary">
                                         <Edit className="w-3 h-3" />
                                       </Button>
-                                      <Button size="sm" variant="outline" className="border-red-500 text-red-500">
+                                      <Button size="sm" variant="outline" className="border-destructive text-destructive">
                                         <Trash2 className="w-3 h-3" />
                                       </Button>
                                     </div>
@@ -309,44 +309,10 @@ const AdminPortal = () => {
                             </TableBody>
                           </Table>
                         </div>
-                        
-                        {/* Course subscriber actions */}
-                        <div className="mt-4 flex gap-2">
-                          <Button size="sm" className="vintage-gradient text-vintage-cream">
-                            Export {courseName} Subscribers
-                          </Button>
-                          <Button size="sm" variant="outline" className="border-vintage-teal text-vintage-teal">
-                            Email {courseName} Group
-                          </Button>
-                        </div>
-                        
-                        {/* Show special requests if any */}
-                        {courseSubscribers.some(s => s.message) && (
-                          <div className="mt-4 p-4 bg-vintage-cream/30 rounded-lg">
-                            <h4 className="font-semibold text-vintage-teal mb-2">Special Requests:</h4>
-                            {courseSubscribers
-                              .filter(s => s.message)
-                              .map(subscriber => (
-                                <div key={subscriber.id} className="mb-2">
-                                  <span className="font-medium text-vintage-teal">{subscriber.name}:</span>
-                                  <span className="text-vintage-teal/70 ml-2">{subscriber.message}</span>
-                                </div>
-                              ))}
-                          </div>
-                        )}
                       </AccordionContent>
                     </AccordionItem>
                   ))}
                 </Accordion>
-
-                <div className="mt-6 flex gap-2">
-                  <Button className="vintage-gradient text-vintage-cream">
-                    Export All Subscribers
-                  </Button>
-                  <Button variant="outline" className="border-vintage-teal text-vintage-teal">
-                    Send Group Email
-                  </Button>
-                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -354,157 +320,165 @@ const AdminPortal = () => {
           {/* Content Management */}
           <TabsContent value="content">
             <div className="grid md:grid-cols-2 gap-6">
-              <Card className="dance-card-hover">
+              <Card className="card-hover backdrop-blur-glass">
                 <CardHeader>
-                  <CardTitle className="flex items-center text-vintage-teal">
+                  <CardTitle className="flex items-center text-primary">
                     <FileText className="w-5 h-5 mr-2" />
-                    Manage Classes
+                    Gestisci Corsi
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
+                  <form onSubmit={handleAddClass} className="space-y-4">
                     <Input 
-                      placeholder="Class Name *" 
-                      className="border-vintage-teal/30"
+                      placeholder="Nome Corso *" 
+                      className="border-primary/30 focus:border-primary"
                       value={className}
                       onChange={(e) => setClassName(e.target.value)}
+                      required
                     />
                     <Textarea 
-                      placeholder="Class Description *" 
-                      className="border-vintage-teal/30"
+                      placeholder="Descrizione Corso *" 
+                      className="border-primary/30 focus:border-primary"
                       value={classDescription}
                       onChange={(e) => setClassDescription(e.target.value)}
+                      required
                     />
                     <div className="grid grid-cols-2 gap-2">
                       <Input 
-                        placeholder="Time *" 
-                        className="border-vintage-teal/30"
+                        placeholder="Orario *" 
+                        className="border-primary/30 focus:border-primary"
                         value={classTime}
                         onChange={(e) => setClassTime(e.target.value)}
+                        required
                       />
                       <Input 
-                        placeholder="Location *" 
-                        className="border-vintage-teal/30"
+                        placeholder="Luogo *" 
+                        className="border-primary/30 focus:border-primary"
                         value={classLocation}
                         onChange={(e) => setClassLocation(e.target.value)}
+                        required
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <Input 
-                        placeholder="Instructor" 
-                        className="border-vintage-teal/30"
+                        placeholder="Istruttore" 
+                        className="border-primary/30 focus:border-primary"
                         value={classInstructor}
                         onChange={(e) => setClassInstructor(e.target.value)}
                       />
                       <Input 
-                        placeholder="Price (€)" 
+                        placeholder="Prezzo (€)" 
                         type="number"
-                        className="border-vintage-teal/30"
+                        className="border-primary/30 focus:border-primary"
                         value={classPrice}
                         onChange={(e) => setClassPrice(e.target.value)}
                       />
                     </div>
-                    <Button onClick={handleAddClass} className="w-full vintage-gradient text-vintage-cream">
+                    <Button type="submit" className="w-full modern-gradient text-primary-foreground hover:scale-105 transition-transform duration-300">
                       <Plus className="w-4 h-4 mr-1" />
-                      Add Class
+                      Aggiungi Corso
                     </Button>
-                    
-                    <div className="mt-6">
-                      <h4 className="font-vintage font-bold text-vintage-teal mb-3">Current Classes ({courses.length})</h4>
-                      <div className="space-y-2 max-h-64 overflow-y-auto">
-                        {courses.map((cls) => (
-                          <div key={cls.id} className="p-3 bg-vintage-cream/30 rounded-lg flex justify-between items-start">
-                            <div className="flex-1">
-                              <h5 className="font-semibold text-vintage-teal">{cls.name}</h5>
-                              <p className="text-sm text-vintage-teal/70">{cls.description}</p>
-                              <p className="text-xs text-vintage-teal/60">{cls.time} - {cls.location}</p>
-                              {cls.instructor && (
-                                <p className="text-xs text-vintage-teal/60">Instructor: {cls.instructor}</p>
-                              )}
-                              {cls.price && (
-                                <p className="text-xs text-vintage-gold font-medium">€{cls.price}</p>
-                              )}
-                            </div>
-                            <div className="flex gap-1">
-                              <Button size="sm" variant="outline" className="border-vintage-teal text-vintage-teal">
-                                <Edit className="w-3 h-3" />
-                              </Button>
-                              <Button size="sm" variant="outline" className="border-red-500 text-red-500">
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
-                            </div>
+                  </form>
+                  
+                  <div className="mt-6">
+                    <h4 className="font-display font-bold text-primary mb-3">Corsi Attuali ({courses.length})</h4>
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {courses.map((cls) => (
+                        <div key={cls.id} className="p-3 backdrop-blur-glass rounded-lg flex justify-between items-start animate-slide-up">
+                          <div className="flex-1">
+                            <h5 className="font-semibold text-primary">{cls.name}</h5>
+                            <p className="text-sm text-muted-foreground">{cls.description}</p>
+                            <p className="text-xs text-muted-foreground">{cls.time} - {cls.location}</p>
+                            {cls.instructor && (
+                              <p className="text-xs text-muted-foreground">Istruttore: {cls.instructor}</p>
+                            )}
+                            {cls.price && (
+                              <p className="text-xs text-accent font-medium">€{cls.price}</p>
+                            )}
                           </div>
-                        ))}
-                      </div>
+                          <div className="flex gap-1">
+                            <Button size="sm" variant="outline" className="border-primary text-primary">
+                              <Edit className="w-3 h-3" />
+                            </Button>
+                            <Button size="sm" variant="outline" className="border-destructive text-destructive">
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="dance-card-hover">
+              <Card className="card-hover backdrop-blur-glass">
                 <CardHeader>
-                  <CardTitle className="flex items-center text-vintage-teal">
+                  <CardTitle className="flex items-center text-primary">
                     <Calendar className="w-5 h-5 mr-2" />
-                    Manage Events
+                    Gestisci Eventi
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
+                  <form onSubmit={handleAddEvent} className="space-y-4">
                     <Input 
-                      placeholder="Event Name *" 
-                      className="border-vintage-teal/30"
+                      placeholder="Nome Evento *" 
+                      className="border-primary/30 focus:border-primary"
                       value={eventName}
                       onChange={(e) => setEventName(e.target.value)}
+                      required
                     />
                     <Textarea 
-                      placeholder="Event Description *" 
-                      className="border-vintage-teal/30"
+                      placeholder="Descrizione Evento *" 
+                      className="border-primary/30 focus:border-primary"
                       value={eventDescription}
                       onChange={(e) => setEventDescription(e.target.value)}
+                      required
                     />
                     <div className="grid grid-cols-2 gap-2">
                       <Input 
                         type="date" 
-                        className="border-vintage-teal/30"
+                        className="border-primary/30 focus:border-primary"
                         value={eventDate}
                         onChange={(e) => setEventDate(e.target.value)}
+                        required
                       />
                       <Input 
-                        placeholder="Venue *" 
-                        className="border-vintage-teal/30"
+                        placeholder="Luogo *" 
+                        className="border-primary/30 focus:border-primary"
                         value={eventVenue}
                         onChange={(e) => setEventVenue(e.target.value)}
+                        required
                       />
                     </div>
-                    <Button onClick={handleAddEvent} className="w-full vintage-gradient text-vintage-cream">
+                    <Button type="submit" className="w-full modern-gradient text-primary-foreground hover:scale-105 transition-transform duration-300">
                       <Plus className="w-4 h-4 mr-1" />
-                      Add Event
+                      Aggiungi Evento
                     </Button>
-                    
-                    <div className="mt-6">
-                      <h4 className="font-vintage font-bold text-vintage-teal mb-3">Current Events ({events.length})</h4>
-                      <div className="space-y-2 max-h-64 overflow-y-auto">
-                        {events.map((event) => (
-                          <div key={event.id} className="p-3 bg-vintage-cream/30 rounded-lg flex justify-between items-start">
-                            <div className="flex-1">
-                              <h5 className="font-semibold text-vintage-teal">{event.name}</h5>
-                              <p className="text-sm text-vintage-teal/70">{event.description}</p>
-                              <p className="text-xs text-vintage-teal/60">{event.date} - {event.venue}</p>
-                              {event.ticketPrice && (
-                                <p className="text-xs text-vintage-gold font-medium">€{event.ticketPrice}</p>
-                              )}
-                            </div>
-                            <div className="flex gap-1">
-                              <Button size="sm" variant="outline" className="border-vintage-teal text-vintage-teal">
-                                <Edit className="w-3 h-3" />
-                              </Button>
-                              <Button size="sm" variant="outline" className="border-red-500 text-red-500">
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
-                            </div>
+                  </form>
+                  
+                  <div className="mt-6">
+                    <h4 className="font-display font-bold text-primary mb-3">Eventi Attuali ({events.length})</h4>
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {events.map((event) => (
+                        <div key={event.id} className="p-3 backdrop-blur-glass rounded-lg flex justify-between items-start animate-slide-up">
+                          <div className="flex-1">
+                            <h5 className="font-semibold text-primary">{event.name}</h5>
+                            <p className="text-sm text-muted-foreground">{event.description}</p>
+                            <p className="text-xs text-muted-foreground">{event.date} - {event.venue}</p>
+                            {event.ticketPrice && (
+                              <p className="text-xs text-accent font-medium">€{event.ticketPrice}</p>
+                            )}
                           </div>
-                        ))}
-                      </div>
+                          <div className="flex gap-1">
+                            <Button size="sm" variant="outline" className="border-primary text-primary">
+                              <Edit className="w-3 h-3" />
+                            </Button>
+                            <Button size="sm" variant="outline" className="border-destructive text-destructive">
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </CardContent>
