@@ -108,9 +108,9 @@ const EventCarousel = () => {
                       {/* Enhanced Price/Type Badge */}
                       <div className="absolute top-4 right-4 bg-vintage-gold text-vintage-brown px-4 py-2 rounded-full font-bold text-sm animate-glow-pulse-rainbow border-2 border-vintage-cream shadow-badge-glow">
                         {item.itemType === 'event' ? (
-                          item.ticketPrice ? `€${item.ticketPrice}` : '🎪 EVENTO'
+                          'ticketPrice' in item && item.ticketPrice ? `€${item.ticketPrice}` : '🎪 EVENTO'
                         ) : (
-                          `€${item.price}`
+                          'price' in item && item.price ? `€${item.price}` : '🎵 CORSO'
                         )}
                       </div>
                     </div>
@@ -130,26 +130,34 @@ const EventCarousel = () => {
                       <div className="space-y-3">
                         {item.itemType === 'event' ? (
                           <>
-                            <div className="flex items-center text-sm text-vintage-brown/70 animate-slide-in-bounce">
-                              <Calendar className="w-4 h-4 mr-2 text-primary animate-float-gentle" />
-                              <span>{formatDate(item.date)}</span>
-                            </div>
-                            <div className="flex items-center text-sm text-vintage-brown/70 animate-slide-in-bounce stagger-1">
-                              <MapPin className="w-4 h-4 mr-2 text-accent animate-float-gentle stagger-1" />
-                              <span>{item.venue}</span>
-                            </div>
+                            {'date' in item && (
+                              <div className="flex items-center text-sm text-vintage-brown/70 animate-slide-in-bounce">
+                                <Calendar className="w-4 h-4 mr-2 text-primary animate-float-gentle" />
+                                <span>{formatDate(item.date)}</span>
+                              </div>
+                            )}
+                            {'venue' in item && (
+                              <div className="flex items-center text-sm text-vintage-brown/70 animate-slide-in-bounce stagger-1">
+                                <MapPin className="w-4 h-4 mr-2 text-accent animate-float-gentle stagger-1" />
+                                <span>{item.venue}</span>
+                              </div>
+                            )}
                           </>
                         ) : (
                           <>
-                            <div className="flex items-center text-sm text-vintage-brown/70 animate-slide-in-bounce">
-                              <Calendar className="w-4 h-4 mr-2 text-primary animate-float-gentle" />
-                              <span>{item.time}</span>
-                            </div>
-                            <div className="flex items-center text-sm text-vintage-brown/70 animate-slide-in-bounce stagger-1">
-                              <MapPin className="w-4 h-4 mr-2 text-accent animate-float-gentle stagger-1" />
-                              <span>{item.location}</span>
-                            </div>
-                            {item.instructor && (
+                            {'time' in item && (
+                              <div className="flex items-center text-sm text-vintage-brown/70 animate-slide-in-bounce">
+                                <Calendar className="w-4 h-4 mr-2 text-primary animate-float-gentle" />
+                                <span>{item.time}</span>
+                              </div>
+                            )}
+                            {'location' in item && (
+                              <div className="flex items-center text-sm text-vintage-brown/70 animate-slide-in-bounce stagger-1">
+                                <MapPin className="w-4 h-4 mr-2 text-accent animate-float-gentle stagger-1" />
+                                <span>{item.location}</span>
+                              </div>
+                            )}
+                            {'instructor' in item && item.instructor && (
                               <div className="flex items-center text-sm text-vintage-brown/70 animate-slide-in-bounce stagger-2">
                                 <Star className="w-4 h-4 mr-2 text-vintage-gold animate-twinkle" />
                                 <span>Istruttore: {item.instructor}</span>

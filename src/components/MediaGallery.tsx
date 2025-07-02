@@ -88,7 +88,7 @@ const MediaGallery = () => {
                       ) : (
                         <img 
                           src={item.fullImageUrl} 
-                          alt={item.title}
+                          alt={'title' in item ? item.title : 'Media'}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 animate-zoom-in"
                         />
                       )
@@ -125,7 +125,7 @@ const MediaGallery = () => {
                   {/* Enhanced Content */}
                   <div className="p-6 bg-vintage-cream/5">
                     <h3 className="text-xl font-display font-bold text-vintage-brown mb-2 gradient-text-enhanced animate-text-glow-soft">
-                      {item.itemType === 'event' ? item.name : item.title}
+                      {item.itemType === 'event' ? ('name' in item ? item.name : 'Evento') : ('title' in item ? item.title : 'Media')}
                     </h3>
                     <p className="text-vintage-brown/80 text-sm mb-4 line-clamp-2 animate-fade-in-up">
                       {item.description}
@@ -134,15 +134,19 @@ const MediaGallery = () => {
                     {/* Event Details with Enhanced Animations */}
                     {item.itemType === 'event' && (
                       <div className="space-y-2 mb-4">
-                        <div className="flex items-center text-sm text-vintage-brown/70 animate-slide-in-left">
-                          <Calendar className="w-4 h-4 mr-2 text-primary animate-float-gentle" />
-                          <span>{formatDate(item.date)}</span>
-                        </div>
-                        <div className="flex items-center text-sm text-vintage-brown/70 animate-slide-in-left stagger-1">
-                          <MapPin className="w-4 h-4 mr-2 text-accent animate-float-gentle stagger-1" />
-                          <span>{item.venue}</span>
-                        </div>
-                        {item.ticketPrice && (
+                        {'date' in item && (
+                          <div className="flex items-center text-sm text-vintage-brown/70 animate-slide-in-left">
+                            <Calendar className="w-4 h-4 mr-2 text-primary animate-float-gentle" />
+                            <span>{formatDate(item.date)}</span>
+                          </div>
+                        )}
+                        {'venue' in item && (
+                          <div className="flex items-center text-sm text-vintage-brown/70 animate-slide-in-left stagger-1">
+                            <MapPin className="w-4 h-4 mr-2 text-accent animate-float-gentle stagger-1" />
+                            <span>{item.venue}</span>
+                          </div>
+                        )}
+                        {'ticketPrice' in item && item.ticketPrice && (
                           <div className="flex items-center text-sm animate-slide-in-left stagger-2">
                             <Clock className="w-4 h-4 mr-2 text-vintage-gold animate-float-gentle stagger-2" />
                             <span className="font-bold text-accent animate-pulse-glow">€{item.ticketPrice}</span>
