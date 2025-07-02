@@ -10,24 +10,25 @@ import EventDialog from "./EventDialog";
 const MediaGallery = () => {
   const { mediaItems, events } = useAppContext();
   const [selectedMedia, setSelectedMedia] = useState<any>(null);
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
 
   // Combine media items and events for display
   const allItems = [
-    ...mediaItems.map(item => ({ ...item, type: 'media' })),
-    ...events.map(event => ({ ...event, type: 'event' }))
+    ...mediaItems.map(item => ({ ...item, itemType: 'media' })),
+    ...events.map(event => ({ ...event, itemType: 'event' }))
   ];
 
-  const getTypeIcon = (type: string, mediaType?: string) => {
-    if (type === 'event') return Calendar;
-    if (mediaType === 'image') return ImageIcon;
+  const getTypeIcon = (itemType: string, mediaType?: string) => {
+    if (itemType === 'event') return Calendar;
     if (mediaType === 'video') return Video;
+    if (mediaType === 'photo') return ImageIcon;
     return Music;
   };
 
-  const getTypeColor = (type: string, mediaType?: string) => {
-    if (type === 'event') return 'text-accent';
-    if (mediaType === 'image') return 'text-primary';
-    if (mediaType === 'video') return 'text-secondary-foreground';
+  const getTypeColor = (itemType: string, mediaType?: string) => {
+    if (itemType === 'event') return 'text-accent';
+    if (mediaType === 'video') return 'text-primary';
+    if (mediaType === 'photo') return 'text-secondary-foreground';
     return 'text-muted-foreground';
   };
 
@@ -38,6 +39,14 @@ const MediaGallery = () => {
       month: 'long', 
       year: 'numeric' 
     });
+  };
+
+  const handleItemClick = (item: any) => {
+    if (item.itemType === 'event') {
+      setSelectedEvent(item);
+    } else {
+      setSelectedMedia(item);
+    }
   };
 
   return (
@@ -54,35 +63,30 @@ const MediaGallery = () => {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {allItems.map((item, index) => {
-            const TypeIcon = getTypeIcon(item.type, item.mediaType);
-            const isEvent = item.type === 'event';
+            const isEvent = item.itemType === 'event';
+            const mediaType = isEvent ? undefined : item.type;
+            const TypeIcon = getTypeIcon(item.itemType, mediaType);
             
             return (
               <Card 
-                key={`${item.type}-${item.id}`} 
+                key={`${item.itemType}-${item.id}`} 
                 className={`cursor-pointer card-hover rockabilly-card overflow-hidden animate-scale-in stagger-${Math.min(index % 4 + 1, 4)}`}
-                onClick={() => {
-                  if (isEvent) {
-                    // Event dialog will be handled by EventDialog component
-                  } else {
-                    setSelectedMedia(item);
-                  }
-                }}
+                onClick={() => handleItemClick(item)}
               >
                 <CardContent className="p-0">
                   {/* Media/Event Header */}
                   <div className="relative h-48 overflow-hidden">
-                    {!isEvent && item.url ? (
-                      item.mediaType === 'video' ? (
+                    {!isEvent && (item.videoUrl || item.fullImageUrl) ? (
+                      item.type === 'video' ? (
                         <video 
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                           poster={item.thumbnail}
                         >
-                          <source src={item.url} type="video/mp4" />
+                          <source src={item.videoUrl} type="video/mp4" />
                         </video>
                       ) : (
                         <img 
-                          src={item.url} 
+                          src={item.fullImageUrl} 
                           alt={item.title}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         />
@@ -103,7 +107,7 @@ const MediaGallery = () => {
                         )}
                         
                         <div className="relative z-10 text-center">
-                          <TypeIcon className={`w-12 h-12 mx-auto mb-2 ${getTypeColor(item.type, item.mediaType)} animate-float`} />
+                          <TypeIcon className={`w-12 h-12 mx-auto mb-2 ${getTypeColor(item.itemType, mediaType)} animate-float`} />
                           <p className="text-primary-foreground font-semibold">
                             {isEvent ? 'Evento Speciale' : 'Media Rockabilly'}
                           </p>
@@ -113,14 +117,14 @@ const MediaGallery = () => {
                     
                     {/* Type Badge */}
                     <Badge className="absolute top-4 right-4 bg-accent/90 text-accent-foreground animate-glow-pulse">
-                      {isEvent ? '🎪 Evento' : item.mediaType === 'video' ? '🎬 Video' : '📸 Foto'}
+                      {isEvent ? '🎪 Evento' : item.type === 'video' ? '🎬 Video' : '📸 Foto'}
                     </Badge>
                   </div>
 
                   {/* Content */}
                   <div className="p-6">
                     <h3 className="text-xl font-display font-bold text-foreground mb-2 gradient-text">
-                      {item.title || item.name}
+                      {isEvent ? item.name : item.title}
                     </h3>
                     <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
                       {item.description}
@@ -164,17 +168,18 @@ const MediaGallery = () => {
         {/* Media Viewer Modal */}
         {selectedMedia && (
           <MediaViewer 
-            media={selectedMedia}
+            item={selectedMedia}
+            isOpen={!!selectedMedia}
             onClose={() => setSelectedMedia(null)}
           />
         )}
 
-        {/* Event Dialogs */}
-        {events.map(event => (
-          <EventDialog key={`dialog-${event.id}`} event={event}>
-            <div /> {/* Empty trigger, handled by card click */}
+        {/* Event Dialog */}
+        {selectedEvent && (
+          <EventDialog event={selectedEvent}>
+            <div />
           </EventDialog>
-        ))}
+        )}
 
         {/* Decorative Elements */}
         <div className="flex justify-center mt-16 space-x-8 opacity-60">
