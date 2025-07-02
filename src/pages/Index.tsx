@@ -2,6 +2,7 @@
 import { useState } from "react";
 import HeroSection from "@/components/HeroSection";
 import CarouselSection from "@/components/CarouselSection";
+import EventCarousel from "@/components/EventCarousel";
 import MediaGallery from "@/components/MediaGallery";
 import NewsletterSection from "@/components/NewsletterSection";
 import Navigation from "@/components/Navigation";
@@ -23,6 +24,7 @@ const Index = () => {
           <>
             <HeroSection />
             <CarouselSection />
+            <EventCarousel />
             <MediaGallery />
             <NewsletterSection />
             <Footer />
