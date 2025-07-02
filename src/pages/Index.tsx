@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import HeroSection from "@/components/HeroSection";
-import CarouselSection from "@/components/CarouselSection";
+import CourseCarousel from "@/components/CourseCarousel";
 import EventCarousel from "@/components/EventCarousel";
 import MediaGallery from "@/components/MediaGallery";
 import NewsletterSection from "@/components/NewsletterSection";
@@ -23,7 +23,7 @@ const Index = () => {
         ) : (
           <>
             <HeroSection />
-            <CarouselSection />
+            <CourseCarousel />
             <EventCarousel />
             <MediaGallery />
             <NewsletterSection />
