@@ -123,11 +123,22 @@
   }
 
   .card-hover-enhanced {
-    @apply transition-all duration-700 hover:scale-[1.05] hover:shadow-2xl hover:shadow-vintage-gold/30 hover:-rotate-1;
+    @apply transition-all duration-700 hover:scale-[1.05] hover:shadow-2xl;
+    box-shadow: 0 10px 40px rgba(218, 165, 32, 0.2);
+  }
+  
+  .card-hover-enhanced:hover {
+    box-shadow: 0 20px 60px rgba(218, 165, 32, 0.3);
+    transform: scale(1.05) rotate(-1deg);
   }
 
   .card-hover-mega {
-    @apply transition-all duration-1000 hover:scale-[1.08] hover:shadow-3xl hover:shadow-vintage-gold/40 hover:rotate-2;
+    @apply transition-all duration-1000 hover:scale-[1.08] hover:rotate-2;
+    box-shadow: 0 15px 50px rgba(218, 165, 32, 0.25);
+  }
+  
+  .card-hover-mega:hover {
+    box-shadow: 0 25px 70px rgba(218, 165, 32, 0.4);
   }
   
   .glow-effect {
