@@ -1,0 +1,29 @@
+
+{
+  "name": "rock-turin-dance-server",
+  "version": "1.0.0",
+  "description": "Backend server for Rock in Turin Dance School CMS",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "setup-db": "node scripts/setupDatabase.js"
+  },
+  "keywords": ["rockabilly", "dance", "cms", "mongodb", "express"],
+  "author": "Rock in Turin Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongodb": "^6.3.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "multer": "^1.4.5",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "concurrently": "^8.2.2"
+  }
+}

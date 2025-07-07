@@ -1,57 +1,59 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&family=Bebas+Neue&family=Righteous&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Logo-inspired Blue and Teal color system */
+/* Vintage 60s American color system */
 
 @layer base {
   :root {
-    --background: 220 25% 18%;
-    --foreground: 210 15% 95%;
+    --background: 28 25% 12%;
+    --foreground: 45 15% 92%;
 
-    --card: 220 20% 22%;
-    --card-foreground: 210 10% 92%;
+    --card: 30 20% 18%;
+    --card-foreground: 45 10% 90%;
 
-    --popover: 220 20% 22%;
-    --popover-foreground: 210 10% 92%;
+    --popover: 30 20% 18%;
+    --popover-foreground: 45 10% 90%;
 
-    --primary: 210 85% 65%;
-    --primary-foreground: 220 25% 18%;
+    --primary: 35 85% 55%;
+    --primary-foreground: 28 25% 12%;
 
-    --secondary: 180 25% 28%;
-    --secondary-foreground: 210 10% 92%;
+    --secondary: 15 45% 35%;
+    --secondary-foreground: 45 10% 90%;
 
-    --muted: 200 15% 25%;
-    --muted-foreground: 210 8% 75%;
+    --muted: 25 15% 22%;
+    --muted-foreground: 45 8% 70%;
 
-    --accent: 180 80% 70%;
-    --accent-foreground: 220 25% 18%;
+    --accent: 45 95% 65%;
+    --accent-foreground: 28 25% 12%;
 
-    --destructive: 0 75% 65%;
-    --destructive-foreground: 210 10% 92%;
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 45 10% 90%;
 
-    --border: 200 20% 30%;
-    --input: 200 20% 30%;
-    --ring: 210 85% 65%;
+    --border: 25 20% 25%;
+    --input: 25 20% 25%;
+    --ring: 35 85% 55%;
 
     --radius: 1rem;
 
-    /* Logo-inspired Colors */
-    --logo-blue: 210 85% 45%;
-    --logo-teal: 180 85% 50%;
-    --logo-light-blue: 200 70% 65%;
-    --logo-dark-blue: 220 60% 35%;
-    --logo-accent: 185 75% 55%;
+    /* Vintage 60s Colors */
+    --vintage-gold: 45 95% 65%;
+    --vintage-orange: 25 85% 60%;
+    --vintage-red: 15 75% 55%;
+    --vintage-brown: 30 35% 25%;
+    --vintage-cream: 45 25% 85%;
+    --vintage-mustard: 50 70% 50%;
 
-    --sidebar-background: 220 20% 22%;
-    --sidebar-foreground: 210 10% 90%;
-    --sidebar-primary: 210 85% 65%;
-    --sidebar-primary-foreground: 220 25% 18%;
-    --sidebar-accent: 200 15% 25%;
-    --sidebar-accent-foreground: 210 10% 90%;
-    --sidebar-border: 200 20% 30%;
-    --sidebar-ring: 210 85% 65%;
+    --sidebar-background: 30 20% 18%;
+    --sidebar-foreground: 45 10% 88%;
+    --sidebar-primary: 35 85% 55%;
+    --sidebar-primary-foreground: 28 25% 12%;
+    --sidebar-accent: 25 15% 22%;
+    --sidebar-accent-foreground: 45 10% 88%;
+    --sidebar-border: 25 20% 25%;
+    --sidebar-ring: 35 85% 55%;
   }
 }
 
@@ -63,10 +65,10 @@
   body {
     @apply bg-background text-foreground font-modern;
     background: linear-gradient(135deg, 
-      hsl(220, 25%, 18%) 0%, 
-      hsl(200, 20%, 22%) 30%, 
-      hsl(180, 22%, 25%) 70%, 
-      hsl(210, 25%, 20%) 100%);
+      hsl(28, 25%, 12%) 0%, 
+      hsl(30, 20%, 15%) 30%, 
+      hsl(25, 18%, 18%) 70%, 
+      hsl(30, 22%, 14%) 100%);
     min-height: 100vh;
   }
 
@@ -76,32 +78,32 @@
 }
 
 @layer components {
-  .modern-gradient {
+  .vintage-gradient {
     background: linear-gradient(135deg, 
-      hsl(210, 85%, 65%) 0%, 
-      hsl(180, 80%, 70%) 50%, 
-      hsl(200, 70%, 60%) 100%);
+      hsl(45, 95%, 65%) 0%, 
+      hsl(35, 85%, 55%) 50%, 
+      hsl(25, 85%, 60%) 100%);
   }
 
-  .logo-gradient-warm {
+  .vintage-gradient-warm {
     background: linear-gradient(135deg, 
-      hsl(200, 75%, 55%) 0%, 
-      hsl(180, 60%, 50%) 50%, 
-      hsl(220, 40%, 35%) 100%);
+      hsl(25, 85%, 60%) 0%, 
+      hsl(15, 75%, 55%) 50%, 
+      hsl(30, 35%, 25%) 100%);
   }
 
-  .logo-gradient-premium {
+  .vintage-gradient-premium {
     background: linear-gradient(135deg, 
-      hsl(210, 75%, 65%) 0%, 
-      hsl(180, 70%, 60%) 30%,
-      hsl(200, 65%, 55%) 70%,
-      hsl(220, 60%, 50%) 100%);
+      hsl(45, 95%, 65%) 0%, 
+      hsl(35, 85%, 55%) 30%,
+      hsl(25, 85%, 60%) 70%,
+      hsl(30, 35%, 25%) 100%);
   }
   
   .gradient-text {
     background: linear-gradient(135deg, 
-      hsl(210, 85%, 65%) 0%, 
-      hsl(180, 80%, 70%) 100%);
+      hsl(45, 95%, 65%) 0%, 
+      hsl(35, 85%, 55%) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -109,43 +111,44 @@
 
   .gradient-text-enhanced {
     background: linear-gradient(135deg, 
-      hsl(200, 75%, 55%) 0%, 
-      hsl(180, 80%, 70%) 50%,
-      hsl(210, 85%, 65%) 100%);
+      hsl(45, 95%, 65%) 0%, 
+      hsl(35, 85%, 55%) 50%,
+      hsl(25, 85%, 60%) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
   
   .card-hover {
-    @apply transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/20;
+    @apply transition-all duration-500 hover:scale-[1.02];
+    box-shadow: 0 10px 40px rgba(218, 165, 32, 0.2);
   }
 
   .card-hover-enhanced {
-    @apply transition-all duration-700 hover:scale-[1.05] hover:shadow-2xl;
-    box-shadow: 0 10px 40px rgba(30, 144, 255, 0.2);
+    @apply transition-all duration-700 hover:scale-[1.05];
+    box-shadow: 0 10px 40px rgba(218, 165, 32, 0.2);
   }
   
   .card-hover-enhanced:hover {
-    box-shadow: 0 20px 60px rgba(30, 144, 255, 0.3);
+    box-shadow: 0 20px 60px rgba(218, 165, 32, 0.3);
     transform: scale(1.05) rotate(-1deg);
   }
 
   .card-hover-mega {
     @apply transition-all duration-1000 hover:scale-[1.08] hover:rotate-2;
-    box-shadow: 0 15px 50px rgba(30, 144, 255, 0.25);
+    box-shadow: 0 15px 50px rgba(218, 165, 32, 0.25);
   }
   
   .card-hover-mega:hover {
-    box-shadow: 0 25px 70px rgba(30, 144, 255, 0.4);
+    box-shadow: 0 25px 70px rgba(218, 165, 32, 0.4);
   }
   
   .glow-effect {
-    box-shadow: 0 0 30px hsl(210, 85%, 65%, 0.3);
+    box-shadow: 0 0 30px hsl(45, 95%, 65%, 0.3);
   }
 
   .glow-effect-enhanced {
-    box-shadow: 0 0 40px hsl(200, 75%, 55%, 0.4), 0 0 60px hsl(200, 75%, 55%, 0.2);
+    box-shadow: 0 0 40px hsl(45, 95%, 65%, 0.4), 0 0 60px hsl(35, 85%, 55%, 0.2);
   }
 
   .text-shadow {
@@ -153,19 +156,19 @@
   }
 
   .text-shadow-strong {
-    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 2px 10px rgba(30, 144, 255, 0.3);
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 2px 10px rgba(218, 165, 32, 0.3);
   }
 
   .backdrop-blur-glass {
     backdrop-filter: blur(16px);
-    background: rgba(30, 58, 138, 0.1);
-    border: 1px solid rgba(30, 144, 255, 0.2);
+    background: rgba(139, 69, 19, 0.1);
+    border: 1px solid rgba(218, 165, 32, 0.2);
   }
 
   .backdrop-blur-glass-enhanced {
     backdrop-filter: blur(20px);
-    background: rgba(30, 144, 255, 0.1);
-    border: 1px solid rgba(20, 184, 166, 0.3);
+    background: rgba(218, 165, 32, 0.1);
+    border: 1px solid rgba(255, 140, 0, 0.3);
   }
 
   .vintage-border {
@@ -189,64 +192,75 @@
 
   .vinyl-record {
     background: radial-gradient(circle at center, 
-      #0e222d 20%, 
-      #17424a 40%, 
-      #0e222d 60%);
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 4px 20px rgba(30, 144, 255, 0.3);
+      #2e1a0d 20%, 
+      #4a2c1a 40%, 
+      #2e1a0d 60%);
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 4px 20px rgba(218, 165, 32, 0.3);
   }
 
   .vinyl-record-enhanced {
     background: radial-gradient(circle at center, 
-      #1e2b3d 15%, 
-      #273c5a 35%, 
-      #17424a 55%,
-      #1e2b3d 75%);
-    box-shadow: inset 0 0 30px rgba(0,0,0,0.6), 0 6px 30px rgba(30, 144, 255, 0.4);
+      #3e2a1d 15%, 
+      #5a3c2a 35%, 
+      #4a2c1a 55%,
+      #3e2a1d 75%);
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.6), 0 6px 30px rgba(218, 165, 32, 0.4);
   }
 
   .vinyl-record-premium {
     background: radial-gradient(circle at center, 
-      #2e3b4d 10%, 
-      #374c6a 30%, 
-      #273c5a 50%,
-      #17424a 70%,
-      #1e2b3d 90%);
-    box-shadow: inset 0 0 40px rgba(0,0,0,0.7), 0 8px 40px rgba(30, 144, 255, 0.5);
+      #4e3a2d 10%, 
+      #6a4c3a 30%, 
+      #5a3c2a 50%,
+      #4a2c1a 70%,
+      #3e2a1d 90%);
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.7), 0 8px 40px rgba(218, 165, 32, 0.5);
   }
 
   .rockabilly-card {
     background: linear-gradient(135deg, 
-      rgba(30, 58, 138, 0.1) 0%, 
-      rgba(45, 82, 160, 0.05) 100%);
-    border: 1px solid rgba(30, 144, 255, 0.2);
+      rgba(139, 69, 19, 0.1) 0%, 
+      rgba(160, 82, 45, 0.05) 100%);
+    border: 1px solid rgba(218, 165, 32, 0.2);
     backdrop-filter: blur(10px);
   }
 
   .rockabilly-card-gradient {
     background: linear-gradient(135deg, 
-      rgba(30, 144, 255, 0.1) 0%, 
-      rgba(30, 105, 210, 0.08) 50%,
-      rgba(30, 58, 138, 0.05) 100%);
-    border: 1px solid rgba(20, 184, 166, 0.3);
+      rgba(218, 165, 32, 0.1) 0%, 
+      rgba(205, 133, 63, 0.08) 50%,
+      rgba(139, 69, 19, 0.05) 100%);
+    border: 1px solid rgba(255, 140, 0, 0.3);
     backdrop-filter: blur(15px);
   }
 
   .shadow-vintage-glow {
-    box-shadow: 0 10px 40px rgba(30, 144, 255, 0.2), 0 4px 20px rgba(30, 105, 210, 0.1);
+    box-shadow: 0 10px 40px rgba(218, 165, 32, 0.2), 0 4px 20px rgba(205, 133, 63, 0.1);
   }
 
   .shadow-vinyl-glow {
-    box-shadow: 0 0 30px rgba(30, 144, 255, 0.3), inset 0 0 20px rgba(0,0,0,0.4);
+    box-shadow: 0 0 30px rgba(218, 165, 32, 0.3), inset 0 0 20px rgba(0,0,0,0.4);
   }
 
   .shadow-badge-glow {
-    box-shadow: 0 4px 15px rgba(30, 144, 255, 0.4), 0 0 20px rgba(30, 144, 255, 0.2);
+    box-shadow: 0 4px 15px rgba(218, 165, 32, 0.4), 0 0 20px rgba(218, 165, 32, 0.2);
   }
 
   .shadow-action-glow {
-    box-shadow: 0 6px 25px rgba(30, 144, 255, 0.3), inset 0 2px 10px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 6px 25px rgba(218, 165, 32, 0.3), inset 0 2px 10px rgba(255, 255, 255, 0.1);
+  }
+
+  .vintage-60s-bg {
+    background: linear-gradient(135deg, 
+      #8B4513 0%, 
+      #CD853F 25%, 
+      #DAA520 50%, 
+      #FF8C00 75%, 
+      #B8860B 100%);
   }
 }
+
+/* ... keep existing code (all animations and utility classes) the same ... */
 
 /* Enhanced animations */
 @keyframes float {
@@ -298,20 +312,20 @@
 }
 
 @keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 20px hsl(210, 85%, 65%, 0.4); }
-  50% { box-shadow: 0 0 40px hsl(210, 85%, 65%, 0.6); }
+  0%, 100% { box-shadow: 0 0 20px hsl(45, 95%, 65%, 0.4); }
+  50% { box-shadow: 0 0 40px hsl(45, 95%, 65%, 0.6); }
 }
 
 @keyframes glow-pulse-enhanced {
-  0%, 100% { box-shadow: 0 0 30px hsl(200, 75%, 55%, 0.5); }
-  50% { box-shadow: 0 0 60px hsl(200, 75%, 55%, 0.8); }
+  0%, 100% { box-shadow: 0 0 30px hsl(35, 85%, 55%, 0.5); }
+  50% { box-shadow: 0 0 60px hsl(35, 85%, 55%, 0.8); }
 }
 
 @keyframes glow-pulse-rainbow {
-  0% { box-shadow: 0 0 30px hsl(200, 75%, 55%, 0.5); }
-  33% { box-shadow: 0 0 40px hsl(180, 80%, 70%, 0.6); }
-  66% { box-shadow: 0 0 50px hsl(210, 85%, 65%, 0.7); }
-  100% { box-shadow: 0 0 30px hsl(200, 75%, 55%, 0.5); }
+  0% { box-shadow: 0 0 30px hsl(45, 95%, 65%, 0.5); }
+  33% { box-shadow: 0 0 40px hsl(35, 85%, 55%, 0.6); }
+  66% { box-shadow: 0 0 50px hsl(25, 85%, 60%, 0.7); }
+  100% { box-shadow: 0 0 30px hsl(45, 95%, 65%, 0.5); }
 }
 
 @keyframes slide-up {
@@ -420,10 +434,10 @@
 }
 
 @keyframes pulse-rainbow {
-  0% { background-color: hsl(200, 75%, 55%); }
-  33% { background-color: hsl(180, 80%, 70%); }
-  66% { background-color: hsl(210, 85%, 65%); }
-  100% { background-color: hsl(200, 75%, 55%); }
+  0% { background-color: hsl(45, 95%, 65%); }
+  33% { background-color: hsl(35, 85%, 55%); }
+  66% { background-color: hsl(25, 85%, 60%); }
+  100% { background-color: hsl(45, 95%, 65%); }
 }
 
 @keyframes pulse-waves {
@@ -432,20 +446,20 @@
 }
 
 @keyframes text-glow {
-  0%, 100% { text-shadow: 0 0 10px rgba(30, 144, 255, 0.5); }
-  50% { text-shadow: 0 0 20px rgba(30, 144, 255, 0.8), 0 0 30px rgba(30, 105, 210, 0.4); }
+  0%, 100% { text-shadow: 0 0 10px rgba(218, 165, 32, 0.5); }
+  50% { text-shadow: 0 0 20px rgba(218, 165, 32, 0.8), 0 0 30px rgba(205, 133, 63, 0.4); }
 }
 
 @keyframes text-glow-soft {
-  0%, 100% { text-shadow: 0 0 5px rgba(30, 144, 255, 0.3); }
-  50% { text-shadow: 0 0 15px rgba(30, 144, 255, 0.6); }
+  0%, 100% { text-shadow: 0 0 5px rgba(218, 165, 32, 0.3); }
+  50% { text-shadow: 0 0 15px rgba(218, 165, 32, 0.6); }
 }
 
 @keyframes text-glow-rainbow {
-  0% { text-shadow: 0 0 20px hsl(200, 75%, 55%, 0.6); }
-  33% { text-shadow: 0 0 25px hsl(180, 80%, 70%, 0.7); }
-  66% { text-shadow: 0 0 30px hsl(210, 85%, 65%, 0.8); }
-  100% { text-shadow: 0 0 20px hsl(200, 75%, 55%, 0.6); }
+  0% { text-shadow: 0 0 20px hsl(45, 95%, 65%, 0.6); }
+  33% { text-shadow: 0 0 25px hsl(35, 85%, 55%, 0.7); }
+  66% { text-shadow: 0 0 30px hsl(25, 85%, 60%, 0.8); }
+  100% { text-shadow: 0 0 20px hsl(45, 95%, 65%, 0.6); }
 }
 
 @keyframes text-shimmer {
@@ -572,21 +586,24 @@
 .stagger-3 { animation-delay: 0.3s; }
 .stagger-4 { animation-delay: 0.4s; }
 
-/* Utility classes for logo colors */
-.text-logo-blue { color: hsl(210, 85%, 45%); }
-.text-logo-teal { color: hsl(180, 85%, 50%); }
-.text-logo-light-blue { color: hsl(200, 70%, 65%); }
-.text-logo-dark-blue { color: hsl(220, 60%, 35%); }
-.text-logo-accent { color: hsl(185, 75%, 55%); }
+/* Utility classes for vintage colors */
+.text-vintage-gold { color: hsl(45, 95%, 65%); }
+.text-vintage-orange { color: hsl(25, 85%, 60%); }
+.text-vintage-red { color: hsl(15, 75%, 55%); }
+.text-vintage-brown { color: hsl(30, 35%, 25%); }
+.text-vintage-cream { color: hsl(45, 25%, 85%); }
+.text-vintage-mustard { color: hsl(50, 70%, 50%); }
 
-.bg-logo-blue { background-color: hsl(210, 85%, 45%); }
-.bg-logo-teal { background-color: hsl(180, 85%, 50%); }
-.bg-logo-light-blue { background-color: hsl(200, 70%, 65%); }
-.bg-logo-dark-blue { background-color: hsl(220, 60%, 35%); }
-.bg-logo-accent { background-color: hsl(185, 75%, 55%); }
+.bg-vintage-gold { background-color: hsl(45, 95%, 65%); }
+.bg-vintage-orange { background-color: hsl(25, 85%, 60%); }
+.bg-vintage-red { background-color: hsl(15, 75%, 55%); }
+.bg-vintage-brown { background-color: hsl(30, 35%, 25%); }
+.bg-vintage-cream { background-color: hsl(45, 25%, 85%); }
+.bg-vintage-mustard { background-color: hsl(50, 70%, 50%); }
 
-.border-logo-blue { border-color: hsl(210, 85%, 45%); }
-.border-logo-teal { border-color: hsl(180, 85%, 50%); }
-.border-logo-light-blue { border-color: hsl(200, 70%, 65%); }
-.border-logo-dark-blue { border-color: hsl(220, 60%, 35%); }
-.border-logo-accent { border-color: hsl(185, 75%, 55%); }
+.border-vintage-gold { border-color: hsl(45, 95%, 65%); }
+.border-vintage-orange { border-color: hsl(25, 85%, 60%); }
+.border-vintage-red { border-color: hsl(15, 75%, 55%); }
+.border-vintage-brown { border-color: hsl(30, 35%, 25%); }
+.border-vintage-cream { border-color: hsl(45, 25%, 85%); }
+.border-vintage-mustard { border-color: hsl(50, 70%, 50%); }
