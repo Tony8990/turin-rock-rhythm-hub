@@ -1,6 +1,5 @@
 
 const { getDB } = require('../config/database');
-const { ObjectId } = require('mongodb');
 const Event = require('../models/Event');
 
 const eventController = {
@@ -10,25 +9,70 @@ const eventController = {
       const db = getDB();
       const { page = 1, limit = 10, category, isActive, upcoming } = req.query;
       
-      const filter = {};
-      if (category) filter.category = category;
-      if (isActive !== undefined) filter.isActive = isActive === 'true';
-      if (upcoming === 'true') filter.date = { $gte: new Date() };
+      let query = 'SELECT * FROM events WHERE 1=1';
+      const queryParams = [];
+      let paramCount = 0;
       
-      const skip = (page - 1) * limit;
+      if (category) {
+        paramCount++;
+        query += ` AND category = $${paramCount}`;
+        queryParams.push(category);
+      }
       
-      const events = await db.collection('events')
-        .find(filter)
-        .sort({ date: 1 })
-        .skip(skip)
-        .limit(parseInt(limit))
-        .toArray();
+      if (isActive !== undefined) {
+        paramCount++;
+        query += ` AND is_active = $${paramCount}`;
+        queryParams.push(isActive === 'true');
+      }
       
-      const total = await db.collection('events').countDocuments(filter);
+      if (upcoming === 'true') {
+        paramCount++;
+        query += ` AND date >= $${paramCount}`;
+        queryParams.push(new Date());
+      }
+      
+      query += ' ORDER BY date ASC';
+      
+      const offset = (page - 1) * limit;
+      paramCount++;
+      query += ` LIMIT $${paramCount}`;
+      queryParams.push(parseInt(limit));
+      
+      paramCount++;
+      query += ` OFFSET $${paramCount}`;
+      queryParams.push(offset);
+      
+      const result = await db.query(query, queryParams);
+      
+      // Get total count
+      let countQuery = 'SELECT COUNT(*) FROM events WHERE 1=1';
+      const countParams = [];
+      let countParamCount = 0;
+      
+      if (category) {
+        countParamCount++;
+        countQuery += ` AND category = $${countParamCount}`;
+        countParams.push(category);
+      }
+      
+      if (isActive !== undefined) {
+        countParamCount++;
+        countQuery += ` AND is_active = $${countParamCount}`;
+        countParams.push(isActive === 'true');
+      }
+      
+      if (upcoming === 'true') {
+        countParamCount++;
+        countQuery += ` AND date >= $${countParamCount}`;
+        countParams.push(new Date());
+      }
+      
+      const countResult = await db.query(countQuery, countParams);
+      const total = parseInt(countResult.rows[0].count);
       
       res.json({
         success: true,
-        data: events,
+        data: result.rows,
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),
@@ -52,16 +96,16 @@ const eventController = {
       const db = getDB();
       const { id } = req.params;
       
-      if (!ObjectId.isValid(id)) {
+      if (isNaN(id)) {
         return res.status(400).json({
           success: false,
           message: 'ID evento non valido'
         });
       }
       
-      const event = await db.collection('events').findOne({ _id: new ObjectId(id) });
+      const result = await db.query('SELECT * FROM events WHERE id = $1', [id]);
       
-      if (!event) {
+      if (result.rows.length === 0) {
         return res.status(404).json({
           success: false,
           message: 'Evento non trovato'
@@ -70,7 +114,7 @@ const eventController = {
       
       res.json({
         success: true,
-        data: event
+        data: result.rows[0]
       });
     } catch (error) {
       console.error('Error fetching event:', error);
@@ -98,12 +142,31 @@ const eventController = {
       }
       
       const event = new Event(req.body);
-      const result = await db.collection('events').insertOne(event.toJSON());
+      const eventData = event.toJSON();
+      
+      const result = await db.query(`
+        INSERT INTO events (name, description, date, venue, ticket_price, image_url, max_attendees, category, organizer, contact_info, is_active, is_featured)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+        RETURNING *
+      `, [
+        eventData.name,
+        eventData.description,
+        eventData.date,
+        eventData.venue,
+        eventData.ticket_price,
+        eventData.image_url,
+        eventData.max_attendees,
+        eventData.category,
+        eventData.organizer,
+        eventData.contact_info,
+        eventData.is_active,
+        eventData.is_featured
+      ]);
       
       res.status(201).json({
         success: true,
         message: 'Evento creato con successo',
-        data: { _id: result.insertedId, ...event.toJSON() }
+        data: result.rows[0]
       });
     } catch (error) {
       console.error('Error creating event:', error);
@@ -121,7 +184,7 @@ const eventController = {
       const db = getDB();
       const { id } = req.params;
       
-      if (!ObjectId.isValid(id)) {
+      if (isNaN(id)) {
         return res.status(400).json({
           success: false,
           message: 'ID evento non valido'
@@ -138,30 +201,43 @@ const eventController = {
         });
       }
       
-      const updateData = {
-        ...req.body,
-        date: new Date(req.body.date),
-        updatedAt: new Date()
-      };
+      const event = new Event(req.body);
+      const eventData = event.toJSON();
       
-      const result = await db.collection('events').updateOne(
-        { _id: new ObjectId(id) },
-        { $set: updateData }
-      );
+      const result = await db.query(`
+        UPDATE events 
+        SET name = $1, description = $2, date = $3, venue = $4, ticket_price = $5, 
+            image_url = $6, max_attendees = $7, category = $8, organizer = $9, 
+            contact_info = $10, is_active = $11, is_featured = $12, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $13
+        RETURNING *
+      `, [
+        eventData.name,
+        eventData.description,
+        eventData.date,
+        eventData.venue,
+        eventData.ticket_price,
+        eventData.image_url,
+        eventData.max_attendees,
+        eventData.category,
+        eventData.organizer,
+        eventData.contact_info,
+        eventData.is_active,
+        eventData.is_featured,
+        id
+      ]);
       
-      if (result.matchedCount === 0) {
+      if (result.rows.length === 0) {
         return res.status(404).json({
           success: false,
           message: 'Evento non trovato'
         });
       }
       
-      const updatedEvent = await db.collection('events').findOne({ _id: new ObjectId(id) });
-      
       res.json({
         success: true,
         message: 'Evento aggiornato con successo',
-        data: updatedEvent
+        data: result.rows[0]
       });
     } catch (error) {
       console.error('Error updating event:', error);
@@ -179,16 +255,16 @@ const eventController = {
       const db = getDB();
       const { id } = req.params;
       
-      if (!ObjectId.isValid(id)) {
+      if (isNaN(id)) {
         return res.status(400).json({
           success: false,
           message: 'ID evento non valido'
         });
       }
       
-      const result = await db.collection('events').deleteOne({ _id: new ObjectId(id) });
+      const result = await db.query('DELETE FROM events WHERE id = $1', [id]);
       
-      if (result.deletedCount === 0) {
+      if (result.rowCount === 0) {
         return res.status(404).json({
           success: false,
           message: 'Evento non trovato'

@@ -49,15 +49,9 @@ const upload = multer({
 // Routes
 const courseRoutes = require('./routes/courseRoutes');
 const eventRoutes = require('./routes/eventRoutes');
-const subscriptionRoutes = require('./routes/subscriptionRoutes');
-const newsletterRoutes = require('./routes/newsletterRoutes');
-const mediaRoutes = require('./routes/mediaRoutes');
 
 app.use('/api/courses', courseRoutes);
 app.use('/api/events', eventRoutes);
-app.use('/api/subscriptions', subscriptionRoutes);
-app.use('/api/newsletter', newsletterRoutes);
-app.use('/api/media', mediaRoutes);
 
 // File upload endpoint
 app.post('/api/upload', upload.single('file'), (req, res) => {

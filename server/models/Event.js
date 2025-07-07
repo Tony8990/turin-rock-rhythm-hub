@@ -5,16 +5,14 @@ class Event {
     this.description = data.description;
     this.date = new Date(data.date);
     this.venue = data.venue;
-    this.ticketPrice = data.ticketPrice;
-    this.imageUrl = data.imageUrl;
-    this.maxAttendees = data.maxAttendees;
+    this.ticketPrice = data.ticketPrice || data.ticket_price;
+    this.imageUrl = data.imageUrl || data.image_url;
+    this.maxAttendees = data.maxAttendees || data.max_attendees;
     this.category = data.category || 'rockabilly'; // rockabilly, swing, lindy-hop, charleston
     this.organizer = data.organizer;
-    this.contactInfo = data.contactInfo;
-    this.isActive = data.isActive !== undefined ? data.isActive : true;
-    this.isFeatured = data.isFeatured !== undefined ? data.isFeatured : false;
-    this.createdAt = new Date();
-    this.updatedAt = new Date();
+    this.contactInfo = data.contactInfo || data.contact_info;
+    this.isActive = data.isActive !== undefined ? data.isActive : (data.is_active !== undefined ? data.is_active : true);
+    this.isFeatured = data.isFeatured !== undefined ? data.isFeatured : (data.is_featured !== undefined ? data.is_featured : false);
   }
 
   static validate(data) {
@@ -38,11 +36,13 @@ class Event {
       errors.push('La location dell\'evento è richiesta');
     }
     
-    if (data.ticketPrice && (isNaN(data.ticketPrice) || data.ticketPrice < 0)) {
+    if ((data.ticketPrice || data.ticket_price) && 
+        (isNaN(data.ticketPrice || data.ticket_price) || (data.ticketPrice || data.ticket_price) < 0)) {
       errors.push('Il prezzo del biglietto deve essere un numero positivo');
     }
     
-    if (data.maxAttendees && (isNaN(data.maxAttendees) || data.maxAttendees < 1)) {
+    if ((data.maxAttendees || data.max_attendees) && 
+        (isNaN(data.maxAttendees || data.max_attendees) || (data.maxAttendees || data.max_attendees) < 1)) {
       errors.push('Il numero massimo di partecipanti deve essere almeno 1');
     }
     
@@ -55,16 +55,14 @@ class Event {
       description: this.description,
       date: this.date,
       venue: this.venue,
-      ticketPrice: this.ticketPrice,
-      imageUrl: this.imageUrl,
-      maxAttendees: this.maxAttendees,
+      ticket_price: this.ticketPrice,
+      image_url: this.imageUrl,
+      max_attendees: this.maxAttendees,
       category: this.category,
       organizer: this.organizer,
-      contactInfo: this.contactInfo,
-      isActive: this.isActive,
-      isFeatured: this.isFeatured,
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt
+      contact_info: this.contactInfo,
+      is_active: this.isActive,
+      is_featured: this.isFeatured
     };
   }
 }

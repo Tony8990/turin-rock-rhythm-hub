@@ -1,6 +1,5 @@
 
 const { getDB } = require('../config/database');
-const { ObjectId } = require('mongodb');
 const Course = require('../models/Course');
 
 const courseController = {
@@ -10,24 +9,58 @@ const courseController = {
       const db = getDB();
       const { page = 1, limit = 10, level, isActive } = req.query;
       
-      const filter = {};
-      if (level) filter.level = level;
-      if (isActive !== undefined) filter.isActive = isActive === 'true';
+      let query = 'SELECT * FROM courses WHERE 1=1';
+      const queryParams = [];
+      let paramCount = 0;
       
-      const skip = (page - 1) * limit;
+      if (level) {
+        paramCount++;
+        query += ` AND level = $${paramCount}`;
+        queryParams.push(level);
+      }
       
-      const courses = await db.collection('courses')
-        .find(filter)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(parseInt(limit))
-        .toArray();
+      if (isActive !== undefined) {
+        paramCount++;
+        query += ` AND is_active = $${paramCount}`;
+        queryParams.push(isActive === 'true');
+      }
       
-      const total = await db.collection('courses').countDocuments(filter);
+      query += ' ORDER BY created_at DESC';
+      
+      const offset = (page - 1) * limit;
+      paramCount++;
+      query += ` LIMIT $${paramCount}`;
+      queryParams.push(parseInt(limit));
+      
+      paramCount++;
+      query += ` OFFSET $${paramCount}`;
+      queryParams.push(offset);
+      
+      const result = await db.query(query, queryParams);
+      
+      // Get total count
+      let countQuery = 'SELECT COUNT(*) FROM courses WHERE 1=1';
+      const countParams = [];
+      let countParamCount = 0;
+      
+      if (level) {
+        countParamCount++;
+        countQuery += ` AND level = $${countParamCount}`;
+        countParams.push(level);
+      }
+      
+      if (isActive !== undefined) {
+        countParamCount++;
+        countQuery += ` AND is_active = $${countParamCount}`;
+        countParams.push(isActive === 'true');
+      }
+      
+      const countResult = await db.query(countQuery, countParams);
+      const total = parseInt(countResult.rows[0].count);
       
       res.json({
         success: true,
-        data: courses,
+        data: result.rows,
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),
@@ -51,16 +84,16 @@ const courseController = {
       const db = getDB();
       const { id } = req.params;
       
-      if (!ObjectId.isValid(id)) {
+      if (isNaN(id)) {
         return res.status(400).json({
           success: false,
           message: 'ID corso non valido'
         });
       }
       
-      const course = await db.collection('courses').findOne({ _id: new ObjectId(id) });
+      const result = await db.query('SELECT * FROM courses WHERE id = $1', [id]);
       
-      if (!course) {
+      if (result.rows.length === 0) {
         return res.status(404).json({
           success: false,
           message: 'Corso non trovato'
@@ -69,7 +102,7 @@ const courseController = {
       
       res.json({
         success: true,
-        data: course
+        data: result.rows[0]
       });
     } catch (error) {
       console.error('Error fetching course:', error);
@@ -97,11 +130,12 @@ const courseController = {
       }
       
       // Check if course with same name already exists
-      const existingCourse = await db.collection('courses').findOne({ 
-        name: req.body.name.trim() 
-      });
+      const existingCourse = await db.query(
+        'SELECT id FROM courses WHERE name = $1',
+        [req.body.name.trim()]
+      );
       
-      if (existingCourse) {
+      if (existingCourse.rows.length > 0) {
         return res.status(409).json({
           success: false,
           message: 'Esiste già un corso con questo nome'
@@ -109,12 +143,32 @@ const courseController = {
       }
       
       const course = new Course(req.body);
-      const result = await db.collection('courses').insertOne(course.toJSON());
+      const courseData = course.toJSON();
+      
+      const result = await db.query(`
+        INSERT INTO courses (name, description, instructor, time, location, max_participants, price, image_url, level, duration, start_date, end_date, is_active)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+        RETURNING *
+      `, [
+        courseData.name,
+        courseData.description,
+        courseData.instructor,
+        courseData.time,
+        courseData.location,
+        courseData.max_participants,
+        courseData.price,
+        courseData.image_url,
+        courseData.level,
+        courseData.duration,
+        courseData.start_date,
+        courseData.end_date,
+        courseData.is_active
+      ]);
       
       res.status(201).json({
         success: true,
         message: 'Corso creato con successo',
-        data: { _id: result.insertedId, ...course.toJSON() }
+        data: result.rows[0]
       });
     } catch (error) {
       console.error('Error creating course:', error);
@@ -132,7 +186,7 @@ const courseController = {
       const db = getDB();
       const { id } = req.params;
       
-      if (!ObjectId.isValid(id)) {
+      if (isNaN(id)) {
         return res.status(400).json({
           success: false,
           message: 'ID corso non valido'
@@ -150,8 +204,8 @@ const courseController = {
       }
       
       // Check if course exists
-      const existingCourse = await db.collection('courses').findOne({ _id: new ObjectId(id) });
-      if (!existingCourse) {
+      const existingCourse = await db.query('SELECT id FROM courses WHERE id = $1', [id]);
+      if (existingCourse.rows.length === 0) {
         return res.status(404).json({
           success: false,
           message: 'Corso non trovato'
@@ -159,41 +213,50 @@ const courseController = {
       }
       
       // Check if another course with same name exists (excluding current course)
-      const duplicateCourse = await db.collection('courses').findOne({ 
-        name: req.body.name.trim(),
-        _id: { $ne: new ObjectId(id) }
-      });
+      const duplicateCourse = await db.query(
+        'SELECT id FROM courses WHERE name = $1 AND id != $2',
+        [req.body.name.trim(), id]
+      );
       
-      if (duplicateCourse) {
+      if (duplicateCourse.rows.length > 0) {
         return res.status(409).json({
           success: false,
           message: 'Esiste già un corso con questo nome'
         });
       }
       
-      const updateData = {
-        ...req.body,
-        updatedAt: new Date()
-      };
+      const course = new Course(req.body);
+      const courseData = course.toJSON();
       
-      const result = await db.collection('courses').updateOne(
-        { _id: new ObjectId(id) },
-        { $set: updateData }
-      );
-      
-      if (result.matchedCount === 0) {
-        return res.status(404).json({
-          success: false,
-          message: 'Corso non trovato'
-        });
-      }
-      
-      const updatedCourse = await db.collection('courses').findOne({ _id: new ObjectId(id) });
+      const result = await db.query(`
+        UPDATE courses 
+        SET name = $1, description = $2, instructor = $3, time = $4, location = $5, 
+            max_participants = $6, price = $7, image_url = $8, level = $9, 
+            duration = $10, start_date = $11, end_date = $12, is_active = $13, 
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = $14
+        RETURNING *
+      `, [
+        courseData.name,
+        courseData.description,
+        courseData.instructor,
+        courseData.time,
+        courseData.location,
+        courseData.max_participants,
+        courseData.price,
+        courseData.image_url,
+        courseData.level,
+        courseData.duration,
+        courseData.start_date,
+        courseData.end_date,
+        courseData.is_active,
+        id
+      ]);
       
       res.json({
         success: true,
         message: 'Corso aggiornato con successo',
-        data: updatedCourse
+        data: result.rows[0]
       });
     } catch (error) {
       console.error('Error updating course:', error);
@@ -211,7 +274,7 @@ const courseController = {
       const db = getDB();
       const { id } = req.params;
       
-      if (!ObjectId.isValid(id)) {
+      if (isNaN(id)) {
         return res.status(400).json({
           success: false,
           message: 'ID corso non valido'
@@ -219,21 +282,22 @@ const courseController = {
       }
       
       // Check if course has active subscriptions
-      const activeSubscriptions = await db.collection('courseSubscriptions').countDocuments({
-        courseId: new ObjectId(id),
-        status: { $ne: 'cancelled' }
-      });
+      const activeSubscriptions = await db.query(
+        'SELECT COUNT(*) FROM course_subscriptions WHERE course_id = $1 AND status != $2',
+        [id, 'cancelled']
+      );
       
-      if (activeSubscriptions > 0) {
+      const count = parseInt(activeSubscriptions.rows[0].count);
+      if (count > 0) {
         return res.status(409).json({
           success: false,
-          message: `Non è possibile eliminare il corso. Ci sono ${activeSubscriptions} iscrizioni attive.`
+          message: `Non è possibile eliminare il corso. Ci sono ${count} iscrizioni attive.`
         });
       }
       
-      const result = await db.collection('courses').deleteOne({ _id: new ObjectId(id) });
+      const result = await db.query('DELETE FROM courses WHERE id = $1', [id]);
       
-      if (result.deletedCount === 0) {
+      if (result.rowCount === 0) {
         return res.status(404).json({
           success: false,
           message: 'Corso non trovato'

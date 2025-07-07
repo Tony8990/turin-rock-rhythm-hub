@@ -6,16 +6,14 @@ class Course {
     this.instructor = data.instructor;
     this.time = data.time;
     this.location = data.location;
-    this.maxParticipants = data.maxParticipants || 20;
+    this.maxParticipants = data.maxParticipants || data.max_participants || 20;
     this.price = data.price;
-    this.imageUrl = data.imageUrl;
+    this.imageUrl = data.imageUrl || data.image_url;
     this.level = data.level || 'beginner'; // beginner, intermediate, advanced
     this.duration = data.duration; // in weeks
-    this.startDate = data.startDate;
-    this.endDate = data.endDate;
-    this.isActive = data.isActive !== undefined ? data.isActive : true;
-    this.createdAt = new Date();
-    this.updatedAt = new Date();
+    this.startDate = data.startDate || data.start_date;
+    this.endDate = data.endDate || data.end_date;
+    this.isActive = data.isActive !== undefined ? data.isActive : (data.is_active !== undefined ? data.is_active : true);
   }
 
   static validate(data) {
@@ -45,7 +43,8 @@ class Course {
       errors.push('Il prezzo deve essere un numero positivo');
     }
     
-    if (data.maxParticipants && (isNaN(data.maxParticipants) || data.maxParticipants < 1)) {
+    if ((data.maxParticipants || data.max_participants) && 
+        (isNaN(data.maxParticipants || data.max_participants) || (data.maxParticipants || data.max_participants) < 1)) {
       errors.push('Il numero massimo di partecipanti deve essere almeno 1');
     }
     
@@ -59,16 +58,14 @@ class Course {
       instructor: this.instructor,
       time: this.time,
       location: this.location,
-      maxParticipants: this.maxParticipants,
+      max_participants: this.maxParticipants,
       price: this.price,
-      imageUrl: this.imageUrl,
+      image_url: this.imageUrl,
       level: this.level,
       duration: this.duration,
-      startDate: this.startDate,
-      endDate: this.endDate,
-      isActive: this.isActive,
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt
+      start_date: this.startDate,
+      end_date: this.endDate,
+      is_active: this.isActive
     };
   }
 }
