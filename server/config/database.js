@@ -3,7 +3,7 @@ const { Pool } = require('pg');
 require('dotenv').config();
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://dance_admin:your_secure_password@localhost:5432/rock_turin_dance',
+  connectionString: process.env.DATABASE_URL || 'postgresql://dance_admin:tony@localhost:5432/rock_turin_dance',
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 

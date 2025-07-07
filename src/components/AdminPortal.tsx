@@ -45,7 +45,13 @@ const AdminPortal = () => {
   const [classLocation, setClassLocation] = useState("");
   const [classInstructor, setClassInstructor] = useState("");
   const [classPrice, setClassPrice] = useState("");
-
+  const [classMaxParticipants, setClassMaxParticipants] = useState("");
+  const [classImageUrl, setClassImageUrl] = useState("");
+  const [classLevel, setClassLevel] = useState("");
+  const [classDuration, setClassDuration] = useState("");
+  const [classStartDate, setClassStartDate] = useState("");
+  const [classEndDate, setClassEndDate] = useState("");
+  const [classIsActive, setClassIsActive] = useState(true); // default true
   // Form states for events
   const [eventName, setEventName] = useState("");
   const [eventDescription, setEventDescription] = useState("");
@@ -69,29 +75,52 @@ const AdminPortal = () => {
     }
   };
 
-  const handleAddClass = (e: React.FormEvent) => {
+  const handleAddClass = async (e: React.FormEvent) => {
     e.preventDefault();
+  
     if (className && classDescription && classTime && classLocation) {
-      addCourse({
-        name: className,
-        description: classDescription,
-        time: classTime,
-        location: classLocation,
-        instructor: classInstructor || undefined,
-        price: classPrice ? parseFloat(classPrice) : undefined
-      });
-      
-      setClassName("");
-      setClassDescription("");
-      setClassTime("");
-      setClassLocation("");
-      setClassInstructor("");
-      setClassPrice("");
-      
-      toast({
-        title: "Corso Aggiunto! 🎉",
-        description: `${className} è stato aggiunto con successo.`,
-      });
+      try {
+        await addCourse({
+          name: className,
+          description: classDescription,
+          time: classTime,
+          location: classLocation,
+          instructor: classInstructor || null,
+          price: classPrice ? parseFloat(classPrice) : null,
+          maxParticipants: classMaxParticipants ? parseInt(classMaxParticipants, 10) : null,
+          imageUrl: classImageUrl || null,
+          level: classLevel || null,
+          duration: classDuration || null,
+          startDate: classStartDate || null,
+          endDate: classEndDate || null,
+          isActive: classIsActive,
+        });
+  
+        setClassName("");
+        setClassDescription("");
+        setClassTime("");
+        setClassLocation("");
+        setClassInstructor("");
+        setClassPrice("");
+        setClassMaxParticipants("");
+        setClassImageUrl("");
+        setClassLevel("");
+        setClassDuration("");
+        setClassStartDate("");
+        setClassEndDate("");
+        setClassIsActive(true);
+  
+        toast({
+          title: "Corso Aggiunto! 🎉",
+          description: `${className} è stato aggiunto con successo.`,
+        });
+      } catch (error) {
+        toast({
+          title: "Errore",
+          description: "Errore durante l'aggiunta del corso. Riprova più tardi.",
+          variant: "destructive",
+        });
+      }
     } else {
       toast({
         title: "Errore",
@@ -100,6 +129,7 @@ const AdminPortal = () => {
       });
     }
   };
+  
 
   const handleAddEvent = (e: React.FormEvent) => {
     e.preventDefault();
@@ -337,7 +367,7 @@ const AdminPortal = () => {
                       required
                     />
                     <Textarea 
-                      placeholder="Descrizione Corso *" 
+                      placeholder="Descrizione Corso * (Inserire Minimo 10 Caratteri)" 
                       className="border-primary/30 focus:border-primary"
                       value={classDescription}
                       onChange={(e) => setClassDescription(e.target.value)}
@@ -361,13 +391,13 @@ const AdminPortal = () => {
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <Input 
-                        placeholder="Istruttore" 
+                        placeholder="Istruttore *" 
                         className="border-primary/30 focus:border-primary"
                         value={classInstructor}
                         onChange={(e) => setClassInstructor(e.target.value)}
                       />
                       <Input 
-                        placeholder="Prezzo (€)" 
+                        placeholder="Prezzo (€) *" 
                         type="number"
                         className="border-primary/30 focus:border-primary"
                         value={classPrice}

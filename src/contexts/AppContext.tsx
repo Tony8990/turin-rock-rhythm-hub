@@ -21,9 +21,16 @@ interface Course {
   time: string;
   location: string;
   instructor?: string;
-  maxParticipants?: number;
   price?: number;
+  maxParticipants?: number;
+  imageUrl?: string;
+  level?: string;
+  duration?: string;
+  startDate?: string;  // ideally ISO date string (e.g. "2025-07-07")
+  endDate?: string;
+  isActive?: boolean;
 }
+
 
 interface Event {
   id: number;
@@ -54,7 +61,7 @@ interface AppContextType {
   mediaItems: MediaItem[];
   unreadNotifications: number;
   addSubscriber: (subscriber: Omit<Subscriber, 'id' | 'subscriptionDate' | 'status'>) => void;
-  addCourse: (course: Omit<Course, 'id'>) => void;
+  addCourse: (course: Omit<Course, 'id'>) => Promise<void>;
   addEvent: (event: Omit<Event, 'id'>) => void;
   getSubscribersByCourse: () => Record<string, Subscriber[]>;
   markNotificationsAsRead: () => void;
@@ -178,12 +185,54 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const addCourse = (courseData: Omit<Course, 'id'>) => {
-    const newCourse: Course = {
-      ...courseData,
-      id: courses.length + 1
+  // const addCourse = (courseData: Omit<Course, 'id'>) => {
+  //   const newCourse: Course = {
+  //     ...courseData,
+  //     id: courses.length + 1
+  //   };
+  //   setCourses(prev => [...prev, newCourse]);
+  // };
+
+  const toSnakeCaseCourse = (obj: any) => {
+    return {
+      name: obj.name,
+      description: obj.description,
+      instructor: obj.instructor || null,
+      time: obj.time,
+      location: obj.location,
+      max_participants: obj.maxParticipants ?? null,
+      price: obj.price ?? null,
+      image_url: obj.imageUrl || null,
+      level: obj.level || null,
+      duration: obj.duration || null,
+      start_date: obj.startDate || null,
+      end_date: obj.endDate || null,
+      is_active: obj.isActive ?? true,
     };
-    setCourses(prev => [...prev, newCourse]);
+  };
+
+  const addCourse = async (courseData: Omit<Course, 'id'>) => {
+    try {
+      console.log(JSON.stringify(courseData));
+      const payLoad = toSnakeCaseCourse(courseData);
+      console.log(JSON.stringify(payLoad));
+      
+      const response = await fetch('/api/courses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payLoad),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to add course');
+      }
+  
+      const newCourse: Course = await response.json();
+      console.log('New course added:', newCourse);
+      setCourses(prev => [...prev, newCourse]);
+    } catch (error) {
+      console.error('Error adding course:', error);
+    }
   };
 
   const addEvent = (eventData: Omit<Event, 'id'>) => {

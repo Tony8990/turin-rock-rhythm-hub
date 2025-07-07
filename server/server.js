@@ -7,7 +7,7 @@ const { connectDB } = require('./config/database');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 666;
 
 // Middleware
 app.use(cors());
